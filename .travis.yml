@@ -27,6 +27,7 @@ install:
 # python setup.py sdist bdist_wheel
 # twine upload --repository testpypi dist/*
 # twine upload --repository pypi dist/*
+# for dist, prepare first this file here: https://truveris.github.io/articles/configuring-pypirc/
 
 script:
   - py.test  tests/test_* 

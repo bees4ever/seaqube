@@ -7,31 +7,29 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-requirements = ['click==7.1.2',
-                'dill==0.3.2',
-                'gensim==3.8.3',
+requirements = ['dill',
+                'gensim',
                 'googletrans==3.0.0',
                 'nltk==3.5',
-                'numpy==1.19.2',
-                'pandas==1.1.2',
+                'numpy',
+                'pandas',
                 'pathos==0.2.6',
-                'progressbar2==3.53.1',
+                'progressbar2',
                 'pyinflect==0.5.1',
                 'pytest==6.0.2',
-                'schedule==0.6.0',
-                'scikit-learn==0.23.2',
-                'scipy==1.5.2',
-                'sklearn==0.0',
+                'schedule',
+                'scikit-learn',
+                'scipy',
+                'sklearn',
                 'spacy==2.3.2',
-                'tqdm==4.49.0',
-                'urllib3==1.25.10']
+                'tqdm']
 
 # Function that takes several arguments. It assigns these values to our package.
 setuptools.setup(
     # Distribution name the package. Name must be unique so adding your username at the end is common.
     name="seaqube",
     # Version number of your package. Semantic versioning is commonly used.
-    version="0.0.1-beta",
+    version="0.0.6-beta",
     # Author name.
     author="Benjamin Manns",
     # Author's email address.
