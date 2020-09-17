@@ -1,0 +1,28 @@
+language: python
+python:
+  - "3.7"
+
+dist: bionic
+
+# command to install dependencies
+install:
+  - sudo apt-get update
+  - python setup.py install
+  - pip install coveralls
+  - pip install pathos
+  - pip install numpy
+  - pip install pandas
+  - pip install scipy
+  - pip install dill
+  - pip install nltk
+  - pip install spacy
+  - pip install gensim
+  - pip install pytest
+  - pip install progressbar2
+
+
+script:
+  - py.test  tests/test_* 
+  - pip uninstall seaqube -y
+#after_success:
+#  - coveralls

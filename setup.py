@@ -16,6 +16,8 @@ setuptools.setup(
 	author="Ben",
 	# Author's email address.
 	author_email="beesforever@gmx.de",
+    
+    include_package_data = True,
 	# Short description that will show on the PyPi page.
 	description="Semantic Quality Benchmark for Word Embeddings, i.e. Natural Language Models in Python. The shortname is `SeaQuBe` or `seaqube`. Simple call it '| ˈsi: kjuːb |'",
 	# Long description that will display on the PyPi page. Uses the repo's README.md to populate this.
