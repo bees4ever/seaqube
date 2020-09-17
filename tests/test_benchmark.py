@@ -1,4 +1,12 @@
 from os.path import join
+import unittest
+import pytest
+
+class TestWordSimilarityBenchmark(unittest.TestCase):
+    def test_simple_benchmark(self):
+        # need to load a simple model, i.e. small dataset
+        pass
+
 
 if __name__ == "__main__":
     runner = ModelTrainingBenchmark()
