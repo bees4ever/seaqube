@@ -1,3 +1,9 @@
+'''
+Copyright (c) 2020 by Benjamin Manns
+This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
+:author: Benjamin Manns
+'''
+
 import os.path as Path
 from gensim.models._fasttext_bin import load
 import gensim.downloader as api

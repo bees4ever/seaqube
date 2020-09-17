@@ -1,3 +1,10 @@
+'''
+Copyright (c) 2020 by Benjamin Manns
+This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
+:author: Benjamin Manns
+'''
+
+
 import urllib.request
 from os.path import join, isfile, isdir, exists
 from os import mkdir, system
@@ -47,7 +54,12 @@ class ExternalDownload:
 
     def __download_fasttext_en_pretrained(self):
         lang = "en"
-        ft_dir = join(package_path, 'augmentation', 'data', 'fasttext_en')
+        
+        data_dir = join(package_path, 'augmentation', 'data')
+        if not exists(data_dir):
+            mkdir(data_dir)
+
+        ft_dir = join(data_dir, 'fasttext_en')
         if not exists(ft_dir):
             mkdir(ft_dir)
 

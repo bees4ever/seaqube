@@ -1,3 +1,9 @@
+'''
+Copyright (c) 2020 by Benjamin Manns
+This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
+:author: Benjamin Manns
+'''
+
 from gensim.models import FastText
 from seaqube.nlp.seaqube_model import BaseModelWrapper
 from seaqube.nlp.tools import gensim_we_model_to_custom_we_model

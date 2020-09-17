@@ -1,3 +1,8 @@
+'''
+Copyright (c) 2020 by Jason Wei and Kai Zou and Benjamin Manns
+This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
+:author: By Jason Wei, Kai Zou, Benjamin Manns
+'''
 
 import re
 import random
