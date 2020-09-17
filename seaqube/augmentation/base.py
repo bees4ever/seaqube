@@ -159,6 +159,18 @@ class AugmentationStreamer:
                 raise ValueError("Corpus based augmentation not supported yet")
 
     def __call__(self, corpus):
+        # make call compatible with the NLPAUG package (https://github.com/makcedward/nlpaug/blob/)
+        augmentations_wrapped = []
+        for aug in self.augmentations:
+            if isinstance(aug, BaseAugmentation):
+                augmentations_wrapped.append(aug)
+            else:
+                meth = getattr(aug, "augment", None)
+                if callable(meth):
+                    augmentations_wrapped.append(NLPAugWrapper(aug))
+                else:
+                    raise ValueError("Provided augmentation is not implemented yet, you can add it or open an issue")
+        
         for sentence in progressbar(corpus):
             docs = [sentence]
             for aug in self.augmentations:
@@ -178,3 +190,20 @@ class AugmentationStreamer:
                 self.writer.write(d)
 
         return self.writer.close()
+
+
+class NLPAugWrapper(SingleprocessingAugmentation):
+    def shortname(self):
+        return str(self.nlp_aug_object)
+
+    def __init__(self, nlp_aug_object):
+        self.nlp_aug_object = nlp_aug_object
+
+    def get_config(self):
+        return dict(class_name=str(self), hint="This wrappes NLPAug objects")
+
+    def augmentation_implementation(self, sentence):
+        return self.nlp_aug_object.augment(sentence)
+
+    def input_type(self):
+        return "text"

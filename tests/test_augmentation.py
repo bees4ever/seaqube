@@ -1,8 +1,8 @@
-'''
+"""
 Copyright (c) 2020 by Benjamin Manns
 This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
 :author: Benjamin Manns
-'''
+"""
 
 import unittest
 import pytest
@@ -15,7 +15,7 @@ from seaqube.augmentation.word.eda import EDAAugmentation
 from seaqube.augmentation.word.embedding import EmbeddingAugmentation
 from seaqube.augmentation.word.translation import TranslationAugmentation
 from seaqube.nlp.tools import tokenize_corpus, unique_2d_list
-from seaqube.tools.chainer import CallOnOneChain
+from seaqube.tools.chainer import CallOnOneChain, ChainTerm
 
 QUICK_FOX = "The quick brown fox jumps over the lazy dog"
 QUICK_FOX_TOKENIZED = tokenize_corpus([QUICK_FOX])[0]
