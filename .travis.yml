@@ -13,13 +13,20 @@ install:
   - pip install numpy
   - pip install pandas
   - pip install scipy
+  - python -m spacy download en_core_web_sm
   - pip install dill
   - pip install nltk
   - pip install spacy
   - pip install gensim
   - pip install pytest
   - pip install progressbar2
+  - pip install wheel
+  - pip install twine
 
+# deploy:
+# python setup.py sdist bdist_wheel
+# twine upload --repository testpypi dist/*
+# twine upload --repository pypi dist/*
 
 script:
   - py.test  tests/test_* 

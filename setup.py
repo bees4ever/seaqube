@@ -1,41 +1,61 @@
+# Following instructions from https://medium.com/better-programming/publishing-your-python-packages-to-pypi-e48c169f4f09
+
 # Import our newly installed setuptools package.
 import setuptools
 
 # Opens our README.md and assigns it to long_description.
 with open("README.md", "r") as fh:
-	long_description = fh.read()
+    long_description = fh.read()
 
+requirements = ['click==7.1.2',
+                'dill==0.3.2',
+                'gensim==3.8.3',
+                'googletrans==3.0.0',
+                'nltk==3.5',
+                'numpy==1.19.2',
+                'pandas==1.1.2',
+                'pathos==0.2.6',
+                'progressbar2==3.53.1',
+                'pyinflect==0.5.1',
+                'pytest==6.0.2',
+                'schedule==0.6.0',
+                'scikit-learn==0.23.2',
+                'scipy==1.5.2',
+                'sklearn==0.0',
+                'spacy==2.3.2',
+                'tqdm==4.49.0',
+                'urllib3==1.25.10']
 
 # Function that takes several arguments. It assigns these values to our package.
 setuptools.setup(
-	# Distribution name the package. Name must be unique so adding your username at the end is common.
-	name="seaqube",
-	# Version number of your package. Semantic versioning is commonly used.
-	version="0.0.1-beta",
-	# Author name.
-	author="Ben",
-	# Author's email address.
-	author_email="beesforever@gmx.de",
-    
-    include_package_data = True,
-	# Short description that will show on the PyPi page.
-	description="Semantic Quality Benchmark for Word Embeddings, i.e. Natural Language Models in Python. The shortname is `SeaQuBe` or `seaqube`. Simple call it '| ˈsi: kjuːb |'",
-	# Long description that will display on the PyPi page. Uses the repo's README.md to populate this.
-	long_description=long_description,
-	# Defines the content type that the long_description is using.
-	long_description_content_type="text/markdown",
-	# The URL that represents the homepage of the project. Most projects link to the repo.
-	url="https://github.com/bees4ever/SeaQuBe",
-	# Finds all packages within in the project and combines them into the distribution together.
-	packages=setuptools.find_packages(),
-	# requirements or dependencies that will be installed alongside your package when the user installs it via pip.
-	# install_requires=requirements,
-	# Gives pip some metadata about the package. Also displays on the PyPi page.
-	classifiers=[
-		"Programming Language :: Python :: 3.7",
-		"License :: OSI Approved :: MIT License",
-		"Operating System :: OS Independent",
-	],
-	# The version of Python that is required.
-	python_requires='>=3.7',
+    # Distribution name the package. Name must be unique so adding your username at the end is common.
+    name="seaqube",
+    # Version number of your package. Semantic versioning is commonly used.
+    version="0.0.1-beta",
+    # Author name.
+    author="Benjamin Manns",
+    # Author's email address.
+    author_email="benjamin.manns@mni.thm.de",
+
+    include_package_data=True,
+    # Short description that will show on the PyPi page.
+    description="Semantic Quality Benchmark for Word Embeddings, i.e. Natural Language Models in Python. The shortname is `SeaQuBe` or `seaqube`. Simple call it '| ˈsi: kjuːb |'",
+    # Long description that will display on the PyPi page. Uses the repo's README.md to populate this.
+    long_description=long_description,
+    # Defines the content type that the long_description is using.
+    long_description_content_type="text/markdown",
+    # The URL that represents the homepage of the project. Most projects link to the repo.
+    url="https://github.com/bees4ever/SeaQuBe",
+    # Finds all packages within in the project and combines them into the distribution together.
+    packages=setuptools.find_packages(),
+    # requirements or dependencies that will be installed alongside your package when the user installs it via pip.
+    install_requires=requirements,
+    # Gives pip some metadata about the package. Also displays on the PyPi page.
+    classifiers=[
+        "Programming Language :: Python :: 3.7",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
+    # The version of Python that is required.
+    python_requires='>=3.7',
 )
