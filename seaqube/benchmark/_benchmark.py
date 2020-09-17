@@ -4,10 +4,21 @@ from pandas import DataFrame
 from abc import abstractmethod
 import os
 
-from seaqube.nlp._types import SeaQueBeWordEmbeddingsModel
+from seaqube.nlp.types import SeaQueBeWordEmbeddingsModel
 from seaqube.package_config import package_path
 from seaqube.tools.types import Configable
 
+
+class BenchmarkScore:
+    def __init__(self, score, payload=None):
+        self.score = score
+        self.payload = payload
+
+    def __str__(self):
+        return f"(score={self.score}, payload={str(self.payload)})"
+
+    def __repr__(self):
+        return str(self)
 
 class BaseWordEmbeddingBenchmark(Configable):
     @abstractmethod
@@ -19,7 +30,7 @@ class BaseWordEmbeddingBenchmark(Configable):
         pass
 
     @abstractmethod
-    def __call__(self, model: SeaQueBeWordEmbeddingsModel):
+    def __call__(self, model: SeaQueBeWordEmbeddingsModel) -> BenchmarkScore:
         pass
 
 
@@ -47,8 +58,8 @@ class DataSetBasedWordEmbeddingBenchmark(BaseWordEmbeddingBenchmark):
 
 
 shipped_datasets = {
-        'word-similarity': join(package_path, "evaluation", "benchmark_datasets", "word-similarity", "monolingual", "en"),
-        'word-analogy': join(package_path, "evaluation", "benchmark_datasets", "word-analogy", "monolingual", "en"),
+        'word-similarity': join(package_path, "benchmark", "benchmark_datasets", "word-similarity", "monolingual", "en"),
+        'word-analogy': join(package_path, "benchmark", "benchmark_datasets", "word-analogy", "monolingual", "en"),
     }
 
 
@@ -67,3 +78,6 @@ def get_list_of_shipped_test_sets(category):
     base_path = shipped_datasets[category]
 
     return list(map(lambda x: x.replace(".csv", ""), os.listdir(base_path)))
+
+
+

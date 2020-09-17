@@ -6,6 +6,7 @@ from itertools import product
 from seaqube.augmentation.base import MultiprocessingAugmentation
 from seaqube.augmentation.misc.embedding_model_wrapper import PreTrainedModel
 from seaqube.augmentation.misc.model_loader import load_fasttext_en_pretrained, load_word2vec_en_pretrained
+from seaqube.package_config import log
 
 
 class EmbeddingAugmentation(MultiprocessingAugmentation):
@@ -40,13 +41,13 @@ class EmbeddingAugmentation(MultiprocessingAugmentation):
         if model not in ["ft", "w2v"]:
             raise ValueError("model can only be one of 'ft' or 'w2v'")
 
-        print("EmbeddingAugmentation: Start load model")
+        log.info(f"{self.__class__.__name__}: Start load model")
         if model == "ft":
             self.model: PreTrainedModel = load_fasttext_en_pretrained()
         elif model == "w2v":
             self.model: PreTrainedModel = load_word2vec_en_pretrained()
 
-        print("EmbeddingAugmentation: End load model")
+        log.info(f"{self.__class__.__name__}: End load model")
         self.max_length = max_length
         self.remove_duplicates = remove_duplicates
         self.seed = seed

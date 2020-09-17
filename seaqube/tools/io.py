@@ -1,3 +1,5 @@
+import json
+
 from seaqube.tools.types import Writeable
 
 
@@ -10,3 +12,8 @@ class DummyWriter(Writeable):
 
     def close(self):
         return self.cache
+
+
+def load_json(path: str):
+    with open(path, "r") as f:
+        return json.load(f)

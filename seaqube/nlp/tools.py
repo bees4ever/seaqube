@@ -1,7 +1,7 @@
 from collections import Counter
 from copy import deepcopy
 from collections import Iterable
-from seaqube.nlp._types import SeaQueBeWordEmbeddingsModelGensim
+from seaqube.nlp.types import SeaQueBeWordEmbeddingsModelGensim, BackgroundScheduler
 from seaqube.package_config import log
 from nltk import word_tokenize
 from nltk.tokenize.treebank import TreebankWordDetokenizer
@@ -31,7 +31,7 @@ class DelayedListToJSONWriter:
         self.background_scheduler.local_scheduler.every(5).minutes.do(self.__save_on_disk)
 
     def finalize(self):
-        print("DelayedListToJSONWriter: finalize is entered now")
+        log.debug(f"{self.__class__.__name__}: finalize is entered now")
         self.background_scheduler.stop()
         self.buffer_size = 0
         self.__save_on_disk()

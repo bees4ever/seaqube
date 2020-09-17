@@ -3,8 +3,9 @@ from progressbar import progressbar
 from scipy.stats import pearsonr
 
 from seaqube.benchmark._benchmark import DataSetBasedWordEmbeddingBenchmark, get_shipped_test_set_path, \
-    get_list_of_shipped_test_sets
-from seaqube.nlp._types import SeaQueBeWordEmbeddingsModel
+    get_list_of_shipped_test_sets, BenchmarkScore
+from seaqube.nlp.types import SeaQueBeWordEmbeddingsModel
+from seaqube.package_config import log
 
 
 class WordSimilarityBenchmark(DataSetBasedWordEmbeddingBenchmark):
@@ -21,7 +22,7 @@ class WordSimilarityBenchmark(DataSetBasedWordEmbeddingBenchmark):
     def available_test_sets(self):
         return get_list_of_shipped_test_sets("word-similarity")
 
-    def __call__(self, model: SeaQueBeWordEmbeddingsModel):
+    def __call__(self, model: SeaQueBeWordEmbeddingsModel) -> BenchmarkScore:
         model_sim, sheet_sim = [], []
         for rowitem in progressbar(self.test_set.iterrows()):
             _, row = rowitem
@@ -31,7 +32,9 @@ class WordSimilarityBenchmark(DataSetBasedWordEmbeddingBenchmark):
                 sheet_sim.append(row.similarity)
         log.info(f"{self.__class__.__name__}: Correlation of list of length={len(model_sim)}")
         if len(model_sim) < 2:
-            return 0.0
+            return BenchmarkScore(0.0)
 
-        return pearsonr(model_sim, sheet_sim)
+        corr = pearsonr(model_sim, sheet_sim)
+
+        return BenchmarkScore(corr[0], {'pearson': corr, 'matched_words': len(model_sim)})
 

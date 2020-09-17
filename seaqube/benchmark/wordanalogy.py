@@ -3,8 +3,8 @@ import numpy as np
 from progressbar import progressbar
 
 from seaqube.benchmark._benchmark import DataSetBasedWordEmbeddingBenchmark, get_shipped_test_set_path, \
-    get_list_of_shipped_test_sets
-from seaqube.nlp._types import SeaQueBeWordEmbeddingsModel
+    get_list_of_shipped_test_sets, BenchmarkScore
+from seaqube.nlp.types import SeaQueBeWordEmbeddingsModel
 
 
 class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
@@ -29,7 +29,7 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
 
         return list(zip(np.array(model.vocabs())[found_indecies], distances[found_indecies]))
 
-    def __call__(self, model: SeaQueBeWordEmbeddingsModel):
+    def __call__(self, model: SeaQueBeWordEmbeddingsModel) -> BenchmarkScore:
         considered_lines = 0
         correct_hits = 0
 
@@ -37,11 +37,11 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
             _, row = rowitem
             if row.word1 in model.vocabs() and row.word2 in model.vocabs() and row.word3 in model.vocabs() and row.target in model.vocabs():
                 considered_lines += 1  # all words need to be in the vocab list, otherwise it makes no sense
-                calculated_wv = model.wv(row.word1) - model.wv(row.word2) + model.wv(row.word3)
+                calculated_wv = model.wv[row.word1] - model.wv[row.word2] + model.wv[row.word3]
                 word = self.most_similar(calculated_wv, model)[0][0]
                 correct_hits += int(word == row.target)
 
         if considered_lines == 0:
-            return 0
+            return BenchmarkScore(0.0)
             
-        return correct_hits / considered_lines
+        return BenchmarkScore(correct_hits / considered_lines, {'matched_words': considered_lines})

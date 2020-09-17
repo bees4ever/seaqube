@@ -4,9 +4,35 @@ from threading import Thread
 from typing import List
 
 import schedule
-
-from seaqube.nlp._types import SeaQueBeWordEmbeddingsModel
 from seaqube.tools.math import cosine
+
+
+class SeaQueBeWordEmbeddingsModel(ABC):
+    def similarity(self, word_one, word_two) -> float:
+        return cosine(self.wv[word_one], self.wv[word_two])
+
+    @abstractmethod
+    def vocabs(self) -> List[str]:
+        pass
+
+    @abstractmethod
+    def word_vector(self, word):
+        pass
+
+    @property
+    def wv(self):
+        raise NotImplementedError()
+
+    @abstractmethod
+    def matrix(self):
+        """
+        Returns all word vectors as matrix
+        Returns:
+            Matrix of word vectors
+
+        """
+        pass
+
 
 
 class RawModelTinCan(object):
@@ -31,32 +57,6 @@ class BackgroundScheduler(Thread):
             self.local_scheduler.run_pending()
 
 
-
-class SeaQueBeWordEmbeddingsModel(ABC):
-    def similarity(self, word_one, word_two) -> float:
-        return cosine(self.wv(word_one), self.wv(word_two))
-
-    @abstractmethod
-    def vocabs(self) -> List[str]:
-        pass
-
-    @abstractmethod
-    def word_vector(self, word):
-        pass
-
-    @property
-    def wv(self):
-        raise NotImplementedError()
-
-    @abstractmethod
-    def matrix(self):
-        """
-        Returns all word vectors as matrix
-        Returns:
-            Matrix of word vectors
-
-        """
-        pass
 
 
 class SeaQueBeWordEmbeddingsModelGensim(SeaQueBeWordEmbeddingsModel):

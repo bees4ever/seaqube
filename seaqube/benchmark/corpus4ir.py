@@ -1,13 +1,15 @@
 from progressbar import progressbar
 
-from preprocessing import sentenceize_corpus
 from seaqube.augmentation.misc.embedding_model_wrapper import PreTrainedModel
 from seaqube.augmentation.misc.model_loader import load_fasttext_en_pretrained, load_word2vec_en_pretrained
-from seaqube.benchmark._benchmark import BaseWordEmbeddingBenchmark
-from seaqube.nlp._types import SeaQueBeWordEmbeddingsModel
+from seaqube.benchmark._benchmark import BaseWordEmbeddingBenchmark, BenchmarkScore
+from seaqube.nlp.tools import sentenceize_corpus
+from seaqube.nlp.types import SeaQueBeWordEmbeddingsModel
+from seaqube.package_config import log
 from seaqube.tools.math import f_score
 from vec4ir import WordCentroidDistance, Matching, Retrieval
 from numpy import array
+
 
 class Corpus4IRBenchmark(BaseWordEmbeddingBenchmark):
     def __init__(self, small_corpus, model="w2v"):
@@ -39,7 +41,7 @@ class Corpus4IRBenchmark(BaseWordEmbeddingBenchmark):
         result = array(retrieval.query(query, return_scores=True))
         return result[0][result[1] > 0.75]  # 0.75 is a constant
 
-    def __call__(self, model: SeaQueBeWordEmbeddingsModel):
+    def __call__(self, model: SeaQueBeWordEmbeddingsModel) -> BenchmarkScore:
         custom_model_retrival = self.setup_ir(model.wv, self.corpus)
         tp, fn, fp = 0, 0, 0
 
@@ -51,11 +53,11 @@ class Corpus4IRBenchmark(BaseWordEmbeddingBenchmark):
             tp += len(relevant_documents.intersection(search_result_documents))
             fn += len(relevant_documents) - len(relevant_documents.intersection(search_result_documents))
             fp += len(search_result_documents.difference(relevant_documents))
-            print(tp, fn, fp)
+            log.debug(f"{self.__class__.__name__}: tp, fn, fp:{tp}, {fn}, {fp}")
             precision = tp / (tp + fp)
             recall = tp / (tp + fn)
 
-        return f_score(precision, recall, 1)
+        return BenchmarkScore(f_score(precision, recall, 1), dict(tp=tp, fn=fn, fp=fp))
 
     def get_config(self):
         return dict(class_name=str(self), model=self.model.__class__.__name__,)

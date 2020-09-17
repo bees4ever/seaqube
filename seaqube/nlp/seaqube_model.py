@@ -1,14 +1,18 @@
+from abc import abstractmethod
 from os.path import basename
 
 import dill
 # some strange fix
-import numpy
-from nltk import word_tokenize
-
-from seaqube.nlp._types import RawModelTinCan
-from seaqube.tools.math import sif
+from seaqube.nlp.tools import word_count_list
 
 dill._dill._reverse_typemap['ClassType'] = type
+
+import numpy
+from nltk import word_tokenize
+import multiprocessing
+from seaqube.nlp.types import RawModelTinCan
+from seaqube.tools.math import sif
+from seaqube.tools.types import Configable
 
 
 
@@ -79,7 +83,6 @@ class SeaQuBeNLP:
 
     def __call__(self, text):
         docs = [self.w2v(token.lower()) for token in word_tokenize(text) if token.isspace() is False]
-        # print("debug", docs)
         return SeaQuBeNLPDoc(docs, text, self.word_frequency)
 
     def __str__(self):
@@ -87,7 +90,6 @@ class SeaQuBeNLP:
 
     def __repr__(self):
         return str(self)
-
 
 
 class SeaQuBeNLPLoader:
@@ -101,3 +103,46 @@ class SeaQuBeNLPLoader:
         return SeaQuBeNLP(tin_can, name)
 
 
+class BaseModelWrapper(Configable):
+    def __init__(self):
+        self.epochs = -1
+        self.model = None
+        self.__processed = False
+        self.data = None
+
+    @abstractmethod
+    def define_model(self):
+        pass
+
+    @property
+    def cpus(self):
+        return multiprocessing.cpu_count()
+
+    @property
+    def name(self):
+        return str(self.__class__.__name__)
+
+    @abstractmethod
+    def define_training(self):
+        pass
+
+    @abstractmethod
+    def define_epochs(self):
+        pass
+
+    def process(self, data):
+        self.epochs = self.define_epochs()
+        self.data = data
+        self.model = self.define_model()
+        self.define_training()
+        self.__processed = True
+
+    @abstractmethod
+    def _wrap_nlp_model(self, model):
+        pass
+
+    def get(self):
+        if not self.__processed:
+            raise ValueError("First run `process` otherwise the model is empty")
+
+        return RawModelTinCan(self._wrap_nlp_model(self.model), word_count_list(self.data))

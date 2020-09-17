@@ -18,10 +18,8 @@ class GensimEpochLogger(CallbackAny2Vec):
 
     def on_epoch_begin(self, model):
         pass
-        # print("Epoch #{} start".format(self.epoch))
 
     def on_epoch_end(self, model):
-        # print("Epoch #{} end".format(self.epoch))
         self.epoch += 1
         self.bar.update(self.epoch)
 

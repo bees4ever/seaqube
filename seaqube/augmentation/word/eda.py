@@ -8,6 +8,7 @@ from nltk.corpus import wordnet
 
 from seaqube.augmentation.base import MultiprocessingAugmentation
 from seaqube.nlp.tools import tokenize_corpus
+from seaqube.package_config import log
 
 
 class EDAAugmentation(MultiprocessingAugmentation):
@@ -136,7 +137,7 @@ class EDAAugmentation(MultiprocessingAugmentation):
             if len(synonyms) >= 1:
                 synonym = self.random.choice(list(synonyms))
                 new_words = [synonym if word == random_word else word for word in new_words]
-                # print("replaced", random_word, "with", synonym)
+                log.debug(f"{self.__class__.__name__}: replaced={random_word} with {synonym}")
                 num_replaced += 1
             if num_replaced >= n:  # only replace up to n words
                 break
