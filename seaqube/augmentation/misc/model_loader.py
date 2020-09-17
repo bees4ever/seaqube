@@ -11,7 +11,7 @@ def load_fasttext_en_pretrained():
     path = Path.join(package_path, 'augmentation', 'data', 'fasttext_en', 'cc.en.300.bin')
 
     if not Path.isfile(path):
-        raise ValueError("Fast Text Pretrained Model is not available, please run: download('fasttext-en-pretrained')")
+        raise ValueError("Fast Text Pretrained Model is not available, please run: `from seaqube import download;download('fasttext-en-pretrained')`")
 
     with open(path, 'rb') as fin:
         return PreTrainedGensimEN(load(fin))

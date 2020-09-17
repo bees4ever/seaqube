@@ -50,7 +50,7 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
             self.nlp = spacy.load("en_core_web_sm")
         except OSError:
             raise ValueError(
-                "Spacy Pretrained Model is not available, please run: download('spacy-en-pretrained')")
+                "Spacy Pretrained Model is not available, please run: `from seaqube import download;download('spacy-en-pretrained')`")
 
         self.remove_duplicates = remove_duplicates
         self.seed = seed

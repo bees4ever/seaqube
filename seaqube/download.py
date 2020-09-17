@@ -1,6 +1,6 @@
 import urllib.request
 from os.path import join, isfile, isdir, exists
-from os import mkdir
+from os import mkdir, system
 from tqdm import tqdm
 
 import gzip
@@ -42,7 +42,8 @@ class ExternalDownload:
             urllib.request.urlretrieve(url, filename=path, reporthook=t.update_to)
 
     def __download_spacy_en_pretrained(self):
-        subprocess.check_output('python -m spacy download en_core_web_sm', shell=True, universal_newlines=True)
+        #subprocess.check_output('python -m spacy download en_core_web_sm', shell=True, universal_newlines=True)
+        system('python -m spacy download en_core_web_sm')
 
     def __download_fasttext_en_pretrained(self):
         lang = "en"
