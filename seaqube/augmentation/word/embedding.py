@@ -34,7 +34,7 @@ class EmbeddingAugmentation(MultiprocessingAugmentation):
     """
 
     def __init__(self, model="w2v", similar_n=3, max_length: int = 100, remove_duplicates: bool = False,
-                 seed: int = None):
+                 multiprocess: bool = True, seed: int = None):
         """
 
         Args:
@@ -42,6 +42,8 @@ class EmbeddingAugmentation(MultiprocessingAugmentation):
             similar_n:
             max_length: cut the produced text at a limit to prevent overflow
             remove_duplicates: remove after augmentation for duplicates
+            multiprocess: if augmentation class implements the multiprocessing call, then it can be turn off again with
+                    this flag, most for testing purpose
             seed: fix the randomness with a seed for testing purpose
         """
         if model not in ["ft", "w2v"]:
@@ -56,6 +58,7 @@ class EmbeddingAugmentation(MultiprocessingAugmentation):
         log.info(f"{self.__class__.__name__}: End load model")
         self.max_length = max_length
         self.remove_duplicates = remove_duplicates
+        self.multiprocess = multiprocess
         self.seed = seed
 
         if seed is not None:

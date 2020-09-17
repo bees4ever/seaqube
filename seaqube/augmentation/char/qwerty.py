@@ -15,12 +15,14 @@ class QwertyAugmentation(MultiprocessingAugmentation):
     """
 
     def __init__(self, replace_rate: float = 0.01, caps_change: float = 0.1, max_length: int = 100,
-                 remove_duplicates: bool = False, seed: int = None):
+                 remove_duplicates: bool = False, multiprocess: bool = True, seed: int = None):
         """"
         :param float replace_rate: propability that a char around the given is pressed
         :param float caps_change: propability that a upper/lower changes
         :param int max_length: how many texts should produced
         :param bool remove_duplicates: remove after augmentation for duplicates
+        :param multiprocess: if augmentation class implements the multiprocessing call, then it can be turn off again with
+                    this flag, most for testing purpose
         :param int seed: fix the randomness with a seed for testing purpose
         """
         self.replace_rate = replace_rate
@@ -29,6 +31,7 @@ class QwertyAugmentation(MultiprocessingAugmentation):
         self.remove_duplicates = remove_duplicates
         self.r = random.Random()
         self.seed = seed
+        self.multiprocess = multiprocess
 
         if self.seed is not None:
             self.r.seed(self.seed)

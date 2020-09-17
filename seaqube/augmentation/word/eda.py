@@ -33,7 +33,8 @@ class EDAAugmentation(MultiprocessingAugmentation):
         return "text"
 
     def __init__(self, alpha_sr: float = 0.1, alpha_ri: float = 0.1, alpha_rs: float = 0.1, p_rd: float = 0.1,
-                 num_aug: int = 9, max_length: int = 100, remove_duplicates: bool = False, seed: int = None):
+                 num_aug: int = 9, max_length: int = 100, remove_duplicates: bool = False, multiprocess: bool = True,
+                 seed: int = None):
         """
         Args:
             alpha_sr: probability of synonym replacement
@@ -43,6 +44,8 @@ class EDAAugmentation(MultiprocessingAugmentation):
             num_aug: how many single augmentations should performed
             max_length: cut the produced text at a limit to prevent overflow
             remove_duplicates: remove after augmentation for duplicates
+            multiprocess: if augmentation class implements the multiprocessing call, then it can be turn off again with
+                    this flag, most for testing purpose
             seed: fix the randomness with a seed for testing purpose
         """
 
@@ -55,6 +58,7 @@ class EDAAugmentation(MultiprocessingAugmentation):
         self.remove_duplicates = remove_duplicates
         self.seed = seed
         self.random = random.Random()
+        self.multiprocess = multiprocess
 
         if self.seed is not None:
             self.random.seed(self.seed)

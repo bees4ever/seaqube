@@ -61,3 +61,8 @@ class TestCorpus4IRBenchmark(unittest.TestCase):
         res = bench_corpus(nlp.model)
 
         self.assertAlmostEqual(res.score, 0.5760, delta=0.01)
+
+
+if __name__ == "__main__":
+    unittest.main()
+

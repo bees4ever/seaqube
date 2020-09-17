@@ -14,17 +14,21 @@ from seaqube.package_config import log
 
 class Tenses:
     def __init__(self):
-        props = ['SIMPLE_PRESENT', 'PRESENT_PROGRESSIVE', 'PRESENT_PERFECT', 'PAST_PROGRESSIVE', 'SIMPLE_PAST', 'PAST_PERFECT',
-                 'PRESENT_PERFECT_PROGRESSIVE','PAST_PERFECT_PROGRESSIVE', 'FUTURE_I_WILL', 'FUTURE_I_GOING',  'FUTURE_I_PROGRESSIVE', 'FUTURE_II_PROGRESSIVE',  'FUTURE_II',
-                 'CONDITIONAL_I', # can not be detected
-                 'CONDITIONAL_I_PROGRESSIVE', # is not working as for progressive
+        props = ['SIMPLE_PRESENT', 'PRESENT_PROGRESSIVE', 'PRESENT_PERFECT', 'PAST_PROGRESSIVE', 'SIMPLE_PAST',
+                 'PAST_PERFECT',
+                 'PRESENT_PERFECT_PROGRESSIVE', 'PAST_PERFECT_PROGRESSIVE', 'FUTURE_I_WILL', 'FUTURE_I_GOING',
+                 'FUTURE_I_PROGRESSIVE', 'FUTURE_II_PROGRESSIVE', 'FUTURE_II',
+                 'CONDITIONAL_I',  # can not be detected
+                 'CONDITIONAL_I_PROGRESSIVE',  # is not working as for progressive
                  'CONDITIONAL_II',
-                 'CONDITIONAL_II_PROGRESSIVE' # is not working as for progressive
+                 'CONDITIONAL_II_PROGRESSIVE'  # is not working as for progressive
                  ]
         for prop in props:
             self.__dict__[prop] = prop
 
+
 tenses = Tenses()
+
 
 class Active2PassiveAugmentation(SingleprocessingAugmentation):
     """
@@ -37,6 +41,7 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
 
 
     """
+
     def input_type(self):
         """
         Which return type is supported
@@ -44,12 +49,13 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
         """
         return "text"
 
-
-    def __init__(self, remove_duplicates: bool = False, seed: int = None):
+    def __init__(self, remove_duplicates: bool = False, multiprocess: bool = True, seed: int = None):
         """
         Set up the spacy backend to use it for NER
         Args:
             remove_duplicates: remove after augmentation for duplicates
+              multiprocess: if augmentation class implements the multiprocessing call, then it can be turn off again with
+                    this flag, most for testing purpose
             seed: fix the randomness with a seed for testing purpose
         """
         try:
@@ -61,6 +67,7 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
         self.remove_duplicates = remove_duplicates
         self.seed = seed
         self.tenses = Tenses()
+        self.multiprocess = multiprocess
         super(Active2PassiveAugmentation, self).__init__()
 
     def get_config(self):
@@ -80,7 +87,8 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
             try:
                 parts.append(self.sentence2passive(str(sent)))
             except ValueError as ex:
-                log.info(f"A value error raised with following content: {str(ex)} and traceback: {str(ex.__traceback__)}")
+                log.info(
+                    f"A value error raised with following content: {str(ex)} and traceback: {str(ex.__traceback__)}")
 
         if len(parts) == 0:
             return parts
@@ -137,8 +145,7 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
         if 'MD' in tags and 'VB' in tags:
             return self.tenses.FUTURE_I_WILL
 
-
-    def verb_to_participe(self,token):
+    def verb_to_participe(self, token):
         word = self.nlp.vocab[token.lemma].text
         log.debug(f"[verb_to_participe]: inflections {word}")
         try:
@@ -246,7 +253,6 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
         else:
             return short_neg
 
-
     def sentence2passive(self, text):
         """
         https://stackoverflow.com/q/55086029/5885054
@@ -264,7 +270,8 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
         doc_tense = self.get_sentene_tense(doc)
         log.debug(f"[sentence2passive] tense={doc_tense}")
 
-        if doc_tense in [tenses.FUTURE_I_PROGRESSIVE,  tenses.FUTURE_II_PROGRESSIVE, tenses.PAST_PERFECT_PROGRESSIVE, tenses.PRESENT_PERFECT_PROGRESSIVE]:
+        if doc_tense in [tenses.FUTURE_I_PROGRESSIVE, tenses.FUTURE_II_PROGRESSIVE, tenses.PAST_PERFECT_PROGRESSIVE,
+                         tenses.PRESENT_PERFECT_PROGRESSIVE]:
             raise ValueError(f"The given tense ({doc_tense}) can not changed into passive voice")
 
         tags = [d.tag_ for d in doc]
@@ -281,14 +288,13 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
         passived_sentence = []
 
         singular = True
-        #if 'NOUN' in poses:
+        # if 'NOUN' in poses:
         if 'dobj' in deps:
             # the NOUN is the new "start" point
             noun_pos = deps.index('dobj')
 
-
             ####### GO as long back as a articel is there (under part need to checked)
-            backwards_index = noun_pos-1
+            backwards_index = noun_pos - 1
             backwards_index_selected = []
 
             while poses[backwards_index] in ['ADV', 'CCONJ', 'ADJ']:
@@ -300,7 +306,7 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
                     backwards_index_selected.append(backwards_index)
                     backwards_index -= 1
 
-                backwards_index += 1  #  Go one step back, while has ended and there is nothing correct anymore
+                backwards_index += 1  # Go one step back, while has ended and there is nothing correct anymore
 
                 # we have a big list of stuff to added before object
                 det = doc[backwards_index]
@@ -327,33 +333,33 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
             noun_pos = deps.index('pobj')
             if poses[noun_pos] == 'NOUN':
                 ## this is not a person, but a object (accusativ, dativ) I don't now, however, maybe with article
-                if poses[noun_pos-1] == 'DET':
-                    passived_sentence.append(doc[noun_pos-1])
-                    used_indecies.append(noun_pos-1)
+                if poses[noun_pos - 1] == 'DET':
+                    passived_sentence.append(doc[noun_pos - 1])
+                    used_indecies.append(noun_pos - 1)
 
             # there should be no article (I think)
             passived_sentence.append(doc[noun_pos])
             used_indecies.append(noun_pos)
             # also remove a possible ADP before
-            if poses[noun_pos-1] == 'ADP':
-                used_indecies.append(noun_pos-1)
+            if poses[noun_pos - 1] == 'ADP':
+                used_indecies.append(noun_pos - 1)
             # also remove a possible ADP before
-            if poses[noun_pos-1] == 'DET' and poses[noun_pos-2] == 'ADP':
-                used_indecies.append(noun_pos-2)
+            if poses[noun_pos - 1] == 'DET' and poses[noun_pos - 2] == 'ADP':
+                used_indecies.append(noun_pos - 2)
 
 
         else:
-            raise ValueError("This sentence can not transformed to passive voice or this sentence structure is too complex for this implementation")
+            raise ValueError(
+                "This sentence can not transformed to passive voice or this sentence structure is too complex for this implementation")
 
         if tags[noun_pos] in ['NNS']:
             singular = False
-
 
         ## Select the VERB
 
         if 'AUX' in poses and 'VERB' in poses:
             aux_pos = poses.index('AUX')
-            #passived_sentence.append(doc[aux_pos])
+            # passived_sentence.append(doc[aux_pos])
             used_indecies.append(aux_pos)
             if len(poses) > aux_pos + 1 and poses[aux_pos + 1] == "AUX":  ## double aux is already done in backshift
                 used_indecies.append(aux_pos + 1)
@@ -363,11 +369,11 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
                 verb_pos = poses.index('VERB')
                 while deps[verb_pos] == 'aux':
                     used_indecies.append(verb_pos)
-                    verb_pos = poses.index('VERB', verb_pos+1)
+                    verb_pos = poses.index('VERB', verb_pos + 1)
 
             elif doc_tense in [tenses.FUTURE_I_GOING]:
                 verb_pos = poses.index('VERB')
-                if poses[verb_pos+1] == 'PART' and poses[verb_pos+2] == 'VERB':
+                if poses[verb_pos + 1] == 'PART' and poses[verb_pos + 2] == 'VERB':
                     used_indecies.append(verb_pos)
                     used_indecies.append(verb_pos + 1)
                     verb_pos = verb_pos + 2
@@ -387,15 +393,14 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
             if doc_tense in [tenses.FUTURE_I_WILL, tenses.FUTURE_II]:  # this is the same tense as for condition I
                 verbs.insert(0, doc[tags.index('MD')])
 
-            if deps[verb_pos-1] in ['advmod', 'neg']:
-                verbs.insert(1, self.neg_expand(doc[verb_pos-1]))
-                used_indecies.append(verb_pos-1)
+            if deps[verb_pos - 1] in ['advmod', 'neg']:
+                verbs.insert(1, self.neg_expand(doc[verb_pos - 1]))
+                used_indecies.append(verb_pos - 1)
 
             if deps[verb_pos - 1] == 'aux' and deps[verb_pos - 2] in ['advmod', 'neg']:
                 verbs.insert(1, self.neg_expand(doc[verb_pos - 2]))
                 used_indecies.append(verb_pos - 2)
                 used_indecies.append(verb_pos - 1)
-
 
             passived_sentence += verbs
 
@@ -403,8 +408,8 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
         elif 'AUX' in poses:
             verb_pos = poses.index('AUX')
 
-            if len(poses) > verb_pos+1 and poses[verb_pos+1] == "AUX": ## double aux is already done in backshift
-                used_indecies.append(verb_pos+1)
+            if len(poses) > verb_pos + 1 and poses[verb_pos + 1] == "AUX":  ## double aux is already done in backshift
+                used_indecies.append(verb_pos + 1)
 
             passived_sentence += self.backshift(doc_tense, doc[verb_pos], singular, person=passived_sentence[0])
 
@@ -417,9 +422,9 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
         subject_pos = deps.index('nsubj')
         used_indecies.append(subject_pos)
         by_objects = ['by']
-        if poses[subject_pos-1] == 'DET':
-            by_objects.append(doc[subject_pos-1].text.lower())
-            used_indecies.append(subject_pos-1)
+        if poses[subject_pos - 1] == 'DET':
+            by_objects.append(doc[subject_pos - 1].text.lower())
+            used_indecies.append(subject_pos - 1)
 
         by_objects.append(self.nouninv(doc[subject_pos].text))
 
@@ -437,7 +442,5 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
         passived_sentence[0] = passived_sentence[0].capitalize()
 
         return passived_sentence
-
-
 
     # TODO split if conditions and put them first # if there is nothing else"

@@ -35,19 +35,23 @@ class TranslationAugmentation(SingleprocessingAugmentation):
     }
     """
 
-    def __init__(self, base_lang='en', max_length: int = 100, remove_duplicates: bool = False, seed: int = None):
+    def __init__(self, base_lang='en', max_length: int = 100, remove_duplicates: bool = False,
+                 multiprocess: bool = True, seed: int = None):
         """
         Set up the translator for a given start / base language, default is en
         Args:
             base_lang: from where to and back translate and
             max_length: cut the produced text at a limit to prevent overflow
             remove_duplicates: remove after augmentation for duplicates
+            multiprocess: if augmentation class implements the multiprocessing call, then it can be turn off again with
+                    this flag, most for testing purpose
             seed: fix the randomness with a seed for testing purpose
         """
         self.translator = Translator()
         self.base_lang = base_lang
         self.max_length = max_length
         self.remove_duplicates = remove_duplicates
+        self.multiprocess = multiprocess
         self.seed = seed
         super(TranslationAugmentation, self).__init__()
 

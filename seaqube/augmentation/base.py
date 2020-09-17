@@ -8,6 +8,7 @@ from abc import abstractmethod
 from typing import List
 from progressbar import progressbar, ProgressBar
 
+from seaqube.augmentation.reduction._reduction import BaseReduction
 from seaqube.nlp.tools import tokenize_corpus, sentenceize_corpus, unique_2d_list
 from seaqube.package_config import log
 from seaqube.tools.io import DummyWriter
