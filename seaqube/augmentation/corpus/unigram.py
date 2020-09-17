@@ -28,6 +28,8 @@ class TfIdf:
     def idf(self, word):
         N = len(self.corpus)
         df = len(list(filter(lambda doc: word in doc, self.corpus)))
+        if df == 0:
+            return 0
         return np_log(N / df)
 
     def tf_idf(self, doc):

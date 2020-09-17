@@ -10,6 +10,7 @@ import pytest
 from seaqube.augmentation.base import AugmentationStreamer
 from seaqube.augmentation.char.qwerty import QwertyAugmentation
 from seaqube.augmentation.corpus.unigram import UnigramAugmentation
+from seaqube.augmentation.reduction.unique_corpus import UniqueCorpusReduction
 from seaqube.augmentation.word.active2passive import Active2PassiveAugmentation
 from seaqube.augmentation.word.eda import EDAAugmentation
 from seaqube.augmentation.word.embedding import EmbeddingAugmentation
@@ -39,15 +40,12 @@ TEST_CORPUS = [['till', 'this', 'moment', 'i', 'never', 'knew', 'myself', '.'],
 class TestQwertyAugmentation(unittest.TestCase):
     def test_augmentation(self):
         qwerty = QwertyAugmentation(seed=42, replace_rate=0.09, max_length=3)
-        result_one = [['the', 'quick', 'brown', 'fox', 'jumps', 'oved', 'the', 'lazy', 'rog'],
-                      ['the', 'quick', 'brown', 'foz', 'jumps', 'pver', 'the', 'laay', 'dog'],
-                      ['the', 'quick', 'hrown', 'fox', 'jimps', 'over', 'the', 'lwzy', 'dog']]
-        result_two = [['the', 'quicm', 'brown', 'f9x', 'jumps', 'over', 'tne', 'lazy', 'dog'],
-                      ['the', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog'],
-                      ['the', 'quick', 'brown', 'fos', 'j^mps', 'over', 'the', 'iqzy', 'dov']]
-        result_three = [['the', 'qhick', 'brown', 'Fox', 'jumps', 'ovet', 'ths', 'lazy', 'dog'],
-                        ['the', 'quick', 'bro2n', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog'],
-                        ['tbe', 'quidk', 'brown', 'fox', 'jumps', 'obet', 'tye', 'lazy', 'zog']]
+        result_one = [['the', 'quick', 'brown', 'fox', 'jumps', 'ove3', 'the', 'lazy', 'eog'], ['the', 'quick', 'brown', 'fod', 'jumps', '0ver', 'the', 'laxy', 'dog'], ['the', 'quick', 'nrown', 'fox', 'j6mps', 'over', 'the', 'lzzy', 'dog']]
+
+        result_two = [['the', 'quici', 'brown', 'f9x', 'jumps', 'over', 'tve', 'lazy', 'dog'], ['the', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog'], ['the', 'quick', 'brown', 'fos', 'jUmps', 'over', 'the', '<wzy', 'doh']]
+
+        result_three = [['the', 'qyick', 'brown', 'Fox', 'jumps', 'oveg', 'ths', 'lazy', 'dog'], ['the', 'quick', 'brodn', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog'], ['tbe', 'quixk', 'brown', 'fox', 'jumps', 'ofeg', 'tye', 'lazy', 'sog']]
+
 
         self.assertEqual(qwerty.doc_augment(text=QUICK_FOX), result_one)
         self.assertEqual(qwerty.doc_augment(text=QUICK_FOX), result_two)
@@ -167,12 +165,14 @@ class TestTranslationAugmentation(unittest.TestCase):
 
         self.assertLessEqual(len(augmented), 7 * 10)
 
+
 class TestActive2PassiveAugmentation(unittest.TestCase):
     def test_corpus(self):
         a2p = Active2PassiveAugmentation()
         assert a2p([['seldom', ',', 'very', 'seldom', ',', 'does', 'complete', 'truth', 'belong', 'to', 'any', 'human',
               'disclosure', ';', 'seldom', 'can', 'it', 'happen', 'that', 'something', 'is', 'not', 'a', 'little',
-              'disguised', 'or', 'a', 'little', 'mistaken', '.']]) == ['Disclosure', 'has', 'been', 'completed', 'by', 'truth', 'seldom', ',', 'very', 'seldom', ',', 'belong', 'to', 'any', 'human', ';', 'seldom', 'can', 'it', 'happen', 'that', 'something', 'is', 'not', 'a', 'little', 'disguised', 'or', 'a', 'little', 'mistaken', '.']
+              'disguised', 'or', 'a', 'little', 'mistaken', '.']]) == [['Disclosure', 'has', 'been', 'completed', 'by', 'truth', 'seldom', ',', 'very', 'seldom', ',', 'belong', 'to', 'any', 'human', ';', 'seldom', 'can', 'it', 'happen', 'that', 'something', 'is', 'not', 'a', 'little', 'disguised', 'or', 'a', 'little', 'mistaken', '.']]
+
 
     def test_exception(self):
         with pytest.raises(ValueError):
@@ -188,7 +188,7 @@ class TestActive2PassiveAugmentation(unittest.TestCase):
         a2p = Active2PassiveAugmentation()
 
         def active2passive(text):
-            return a2p.doc_augment(text=text)
+            return a2p.doc_augment(text=text)[0]
 
         assert active2passive("I was waiting for Dina") == ['Dina', 'was', 'being', 'waited', 'by', 'me']
         assert active2passive("I was waiting for Dina. She is baking a cake.") == ['Dina', 'was', 'being', 'waited',
@@ -282,18 +282,23 @@ class TestActive2PassiveAugmentation(unittest.TestCase):
 
 class TestAugmentation(unittest.TestCase):
     def test_streaming(self):
-        streamer = AugmentationStreamer([TranslationAugmentation(max_length=2), QwertyAugmentation(seed=424242, max_length=2), ChainTerm(unique_2d_list)], "test_streaming.json")
-        streamer(TEST_CORPUS)
+        streamer = AugmentationStreamer([TranslationAugmentation(max_length=2), QwertyAugmentation(seed=424242, max_length=2)], reduction_chain=[UniqueCorpusReduction()])
+        plain_output = streamer(TEST_CORPUS)
+        print(plain_output)
+
+        assert len(plain_output) == 97
 
     def test_chaining(self):
         import logging
         logging.basicConfig(level=logging.INFO)
-        pipe = CallOnOneChain([TranslationAugmentation(max_length=2), UnigramAugmentation(seed=50, max_length=2, replace_threshold=0.9, find_threshold=0.85),
-                               QwertyAugmentation(seed=424242, max_length=2), unique_2d_list])
         created_corpus = [['the', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog']]
+
+        pipe = CallOnOneChain([TranslationAugmentation(max_length=2), UnigramAugmentation(corpus=created_corpus, seed=50, max_length=2, replace_threshold=0.9, find_threshold=0.85),
+                               QwertyAugmentation(seed=424242, max_length=2), unique_2d_list])
+
         augmented_and_unique = pipe(created_corpus)
 
-        self.assertEqual(10, len(augmented_and_unique))
+        self.assertEqual(3, len(augmented_and_unique))
 
 
 if __name__ == "__main__":
