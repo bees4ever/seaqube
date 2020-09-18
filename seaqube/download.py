@@ -57,7 +57,7 @@ class ExternalDownload:
 
     def __install_vec4ir(self):
         tmp = tempfile.mkdtemp()
-        system('cd ' + tmp + ' && git clone https://github.com/lgalke/vec4ir.git && cd vec4ir/ && python setup.py install')
+        system('cd ' + tmp + ' && git clone https://github.com/bees4ever/vec4ir.git && cd vec4ir/ && pip install -e .')
 
     def __download_fasttext_en_pretrained(self):
         lang = "en"
