@@ -83,6 +83,37 @@ class SeaQueBeWordEmbeddingsModelGensim(SeaQueBeWordEmbeddingsModel):
         return self.gensim_model.wv.vectors
 
 
+class SeaQuBeNLPModel2WV:
+    def __init__(self, vocabs: list, matrix):
+        self.vocabs: list = vocabs
+        self.matrix = matrix
+        self.index2word = vocabs
+        self.vectors = matrix
+
+    def __getitem__(self, word):
+        return self.matrix[self.vocabs.index(word)]
+
+
+class SeaQueBeWordEmbeddingsModelCompressed(SeaQueBeWordEmbeddingsModel):
+    def vocabs(self) -> List[str]:
+        return self.wv_object.vocabs
+
+    def word_vector(self, word):
+        return self.wv_object[word]
+
+    @property
+    def wv(self):
+        return self.wv_object
+
+    def matrix(self):
+        return self.wv_object.matrix
+
+    def __init__(self, wv: SeaQuBeNLPModel2WV):
+        self.wv_object: SeaQuBeNLPModel2WV = wv
+
+
+
+
 class BenchmarkResult:
     def __init__(self, pre_recall, reports):
         self.pre_recall = pre_recall

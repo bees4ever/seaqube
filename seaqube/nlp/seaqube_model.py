@@ -9,6 +9,7 @@ from os.path import basename
 
 import dill
 # some strange fix
+from seaqube.nlp.types import SeaQuBeNLPModel2WV, RawModelTinCan, SeaQueBeWordEmbeddingsModelCompressed
 from seaqube.nlp.tools import word_count_list
 
 dill._dill._reverse_typemap['ClassType'] = type
@@ -16,7 +17,6 @@ dill._dill._reverse_typemap['ClassType'] = type
 import numpy
 from nltk import word_tokenize
 import multiprocessing
-from seaqube.nlp.types import RawModelTinCan
 from seaqube.tools.math import sif
 from seaqube.tools.types import Configable
 
@@ -77,9 +77,14 @@ class SeaQuBeNLP:
 
     def w2v_embed(self, word):
         try:
-            return self.__wv(word)
+            return self.__wv[word]
         except KeyError:
-            return numpy.array(300 * [0.0])
+            return numpy.array(self._dimension() * [0.0])
+        except ValueError:
+            return numpy.array(self._dimension() * [0.0])
+
+    def _dimension(self):
+        return self.model.matrix().shape[1]
 
     def vocab(self):
         return self.model.vocabs()
@@ -106,6 +111,28 @@ class SeaQuBeNLPLoader:
 
     @staticmethod
     def load_model_from_tin_can(tin_can: RawModelTinCan, name) -> SeaQuBeNLP:
+        return SeaQuBeNLP(tin_can, name)
+
+
+class SeaQuBeCompressLoader:
+    @staticmethod
+    def save_model_compressed(tin_can: RawModelTinCan, path) -> None:
+        #cc['matrix'][cc['vocab'].index("man")]
+        compressed_model = {'vocabs': tin_can.model.vocabs(), 'matrix': tin_can.model.matrix(),
+                            'wf': tin_can.word_frequency}
+        with open(path, "wb") as f:
+            dill.dump(compressed_model, f)
+    
+    @staticmethod
+    def load_compressed_model(path: str, name):
+        with open(path, "rb") as f:
+            compressed_model = dill.load(f)
+
+        model = SeaQueBeWordEmbeddingsModelCompressed(SeaQuBeNLPModel2WV(compressed_model['vocabs'],
+                                                                         compressed_model['matrix']))
+
+        tin_can = RawModelTinCan(model, compressed_model['wf'])
+
         return SeaQuBeNLP(tin_can, name)
 
 
@@ -152,3 +179,5 @@ class BaseModelWrapper(Configable):
             raise ValueError("First run `process` otherwise the model is empty")
 
         return RawModelTinCan(self._wrap_nlp_model(self.model), word_count_list(self.data))
+
+

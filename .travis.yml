@@ -33,7 +33,7 @@ install:
 # for dist, prepare first this file here: https://truveris.github.io/articles/configuring-pypirc/
 
 script:
-  - py.test  tests/test_* 
+  - py.test  tests/test_*  -v
   - pip uninstall seaqube -y
 #after_success:
 #  - coveralls
