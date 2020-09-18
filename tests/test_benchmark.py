@@ -13,7 +13,7 @@ from seaqube.benchmark.wordsimilarity import WordSimilarityBenchmark
 from seaqube.nlp.seaqube_model import SeaQuBeNLPLoader
 from seaqube.nlp.tools import tokenize_corpus
 from seaqube.tools.io import load_json
-from SeaQuBeRepo.tests.test_data.small_model import SmallModel
+from .test_data.small_model import SmallModel
 
 
 def load_corpus():
