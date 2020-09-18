@@ -7,7 +7,7 @@ This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in 
 from collections import Counter
 from copy import deepcopy
 from collections import Iterable
-from seaqube.nlp.types import SeaQueBeWordEmbeddingsModelGensim, BackgroundScheduler
+from seaqube.nlp.types import SeaQuBeWordEmbeddingsModelGensim, BackgroundScheduler
 from seaqube.package_config import log
 from nltk import word_tokenize
 from nltk.tokenize.treebank import TreebankWordDetokenizer
@@ -23,7 +23,7 @@ def word_count_list(double_list):
     return word_count
 
 def gensim_we_model_to_custom_we_model(gensim_model):
-    return SeaQueBeWordEmbeddingsModelGensim(gensim_model)
+    return SeaQuBeWordEmbeddingsModelGensim(gensim_model)
 
 class DelayedListToJSONWriter:
     def __init__(self, file_path, buffer_size=10):

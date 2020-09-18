@@ -9,7 +9,7 @@ from os.path import basename
 
 import dill
 # some strange fix
-from seaqube.nlp.types import SeaQuBeNLPModel2WV, RawModelTinCan, SeaQueBeWordEmbeddingsModelCompressed
+from seaqube.nlp.types import SeaQuBeNLPModel2WV, RawModelTinCan, SeaQuBeWordEmbeddingsModelCompressed
 from seaqube.nlp.tools import word_count_list
 
 dill._dill._reverse_typemap['ClassType'] = type
@@ -128,7 +128,7 @@ class SeaQuBeCompressLoader:
         with open(path, "rb") as f:
             compressed_model = dill.load(f)
 
-        model = SeaQueBeWordEmbeddingsModelCompressed(SeaQuBeNLPModel2WV(compressed_model['vocabs'],
+        model = SeaQuBeWordEmbeddingsModelCompressed(SeaQuBeNLPModel2WV(compressed_model['vocabs'],
                                                                          compressed_model['matrix']))
 
         tin_can = RawModelTinCan(model, compressed_model['wf'])

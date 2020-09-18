@@ -10,7 +10,7 @@ from seaqube.augmentation.misc.embedding_model_wrapper import PreTrainedModel
 from seaqube.augmentation.misc.model_loader import load_fasttext_en_pretrained, load_word2vec_en_pretrained
 from seaqube.benchmark._benchmark import BaseWordEmbeddingBenchmark, BenchmarkScore
 from seaqube.nlp.tools import sentenceize_corpus
-from seaqube.nlp.types import SeaQueBeWordEmbeddingsModel
+from seaqube.nlp.types import SeaQuBeWordEmbeddingsModel
 from seaqube.package_config import log
 from seaqube.tools.math import f_score
 
@@ -54,7 +54,7 @@ class Corpus4IRBenchmark(BaseWordEmbeddingBenchmark):
         result = array(retrieval.query(query, return_scores=True))
         return result[0][result[1] > 0.75]  # 0.75 is a constant
 
-    def __call__(self, model: SeaQueBeWordEmbeddingsModel) -> BenchmarkScore:
+    def __call__(self, model: SeaQuBeWordEmbeddingsModel) -> BenchmarkScore:
         custom_model_retrival = self.setup_ir(model.wv, self.corpus)
         tp, fn, fp = 0, 0, 0
 

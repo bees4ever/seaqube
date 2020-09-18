@@ -10,7 +10,7 @@ from pandas import DataFrame
 from abc import abstractmethod
 import os
 
-from seaqube.nlp.types import SeaQueBeWordEmbeddingsModel
+from seaqube.nlp.types import SeaQuBeWordEmbeddingsModel
 from seaqube.package_config import package_path
 from seaqube.tools.types import Configable
 
@@ -36,7 +36,7 @@ class BaseWordEmbeddingBenchmark(Configable):
         pass
 
     @abstractmethod
-    def __call__(self, model: SeaQueBeWordEmbeddingsModel) -> BenchmarkScore:
+    def __call__(self, model: SeaQuBeWordEmbeddingsModel) -> BenchmarkScore:
         pass
 
 

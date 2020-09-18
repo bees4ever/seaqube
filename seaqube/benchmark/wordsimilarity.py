@@ -10,7 +10,7 @@ from scipy.stats import pearsonr
 
 from seaqube.benchmark._benchmark import DataSetBasedWordEmbeddingBenchmark, get_shipped_test_set_path, \
     get_list_of_shipped_test_sets, BenchmarkScore
-from seaqube.nlp.types import SeaQueBeWordEmbeddingsModel
+from seaqube.nlp.types import SeaQuBeWordEmbeddingsModel
 from seaqube.package_config import log
 
 
@@ -28,7 +28,7 @@ class WordSimilarityBenchmark(DataSetBasedWordEmbeddingBenchmark):
     def available_test_sets(self):
         return get_list_of_shipped_test_sets("word-similarity")
 
-    def __call__(self, model: SeaQueBeWordEmbeddingsModel) -> BenchmarkScore:
+    def __call__(self, model: SeaQuBeWordEmbeddingsModel) -> BenchmarkScore:
         model_sim, sheet_sim = [], []
         for rowitem in progressbar(self.test_set.iterrows()):
             _, row = rowitem

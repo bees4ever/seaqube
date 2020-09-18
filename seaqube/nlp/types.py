@@ -13,7 +13,7 @@ import schedule
 from seaqube.tools.math import cosine
 
 
-class SeaQueBeWordEmbeddingsModel(ABC):
+class SeaQuBeWordEmbeddingsModel(ABC):
     def similarity(self, word_one, word_two) -> float:
         return cosine(self.wv[word_one], self.wv[word_two])
 
@@ -42,7 +42,7 @@ class SeaQueBeWordEmbeddingsModel(ABC):
 
 
 class RawModelTinCan(object):
-    def __init__(self, model: SeaQueBeWordEmbeddingsModel, word_frequency):
+    def __init__(self, model: SeaQuBeWordEmbeddingsModel, word_frequency):
         self.model = model
         self.word_frequency = word_frequency
 
@@ -65,7 +65,7 @@ class BackgroundScheduler(Thread):
 
 
 
-class SeaQueBeWordEmbeddingsModelGensim(SeaQueBeWordEmbeddingsModel):
+class SeaQuBeWordEmbeddingsModelGensim(SeaQuBeWordEmbeddingsModel):
     def __init__(self, gensim_model):
         self.gensim_model = gensim_model
 
@@ -94,7 +94,7 @@ class SeaQuBeNLPModel2WV:
         return self.matrix[self.vocabs.index(word)]
 
 
-class SeaQueBeWordEmbeddingsModelCompressed(SeaQueBeWordEmbeddingsModel):
+class SeaQuBeWordEmbeddingsModelCompressed(SeaQuBeWordEmbeddingsModel):
     def vocabs(self) -> List[str]:
         return self.wv_object.vocabs
 

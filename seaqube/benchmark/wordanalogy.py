@@ -10,7 +10,7 @@ from progressbar import progressbar
 
 from seaqube.benchmark._benchmark import DataSetBasedWordEmbeddingBenchmark, get_shipped_test_set_path, \
     get_list_of_shipped_test_sets, BenchmarkScore
-from seaqube.nlp.types import SeaQueBeWordEmbeddingsModel
+from seaqube.nlp.types import SeaQuBeWordEmbeddingsModel
 
 
 class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
@@ -27,7 +27,7 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
     def available_test_sets(self):
         return get_list_of_shipped_test_sets("word-analogy")
 
-    def most_similar(self, calculated_vector, model: SeaQueBeWordEmbeddingsModel, topn=10):
+    def most_similar(self, calculated_vector, model: SeaQuBeWordEmbeddingsModel, topn=10):
         vocab_len = len(model.vocabs())
 
         distances = np.array([np.linalg.norm(calculated_vector - model.matrix()[i]) for i in range(vocab_len)])
@@ -35,7 +35,7 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
 
         return list(zip(np.array(model.vocabs())[found_indecies], distances[found_indecies]))
 
-    def __call__(self, model: SeaQueBeWordEmbeddingsModel) -> BenchmarkScore:
+    def __call__(self, model: SeaQuBeWordEmbeddingsModel) -> BenchmarkScore:
         considered_lines = 0
         correct_hits = 0
 
