@@ -13,6 +13,13 @@ from seaqube.nlp.tools import sentenceize_corpus
 from seaqube.nlp.types import SeaQueBeWordEmbeddingsModel
 from seaqube.package_config import log
 from seaqube.tools.math import f_score
+
+try:
+    import vec4ir
+except ImportError:
+    raise ValueError("The vec4ir module is not available, please run: `from seaqube import download;download('vec4ir')`")
+
+
 from vec4ir import WordCentroidDistance, Matching, Retrieval
 from numpy import array
 

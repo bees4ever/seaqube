@@ -4,7 +4,7 @@ This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in 
 :author: Benjamin Manns
 '''
 
-
+import tempfile
 import urllib.request
 from os.path import join, isfile, isdir, exists
 from os import mkdir, system
@@ -30,6 +30,9 @@ class ExternalDownload:
 
         elif what == "spacy-en-pretrained":
             self.__download_spacy_en_pretrained()
+        
+        elif what == "vec4ir":
+            self.__install_vec4ir()
 
         else:
             raise ValueError(f"The download you want to perform is not implemented (what={what})")
@@ -51,6 +54,10 @@ class ExternalDownload:
     def __download_spacy_en_pretrained(self):
         #subprocess.check_output('python -m spacy download en_core_web_sm', shell=True, universal_newlines=True)
         system('python -m spacy download en_core_web_sm')
+
+    def __install_vec4ir(self):
+        tmp = tempfile.mkdtemp()
+        system('cd ' + tmp + ' && git clone https://github.com/lgalke/vec4ir.git && cd vec4ir/ && python setup.py install')
 
     def __download_fasttext_en_pretrained(self):
         lang = "en"
