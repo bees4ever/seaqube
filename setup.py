@@ -24,17 +24,20 @@ requirements = ['dill',
                 'spacy==2.3.2',
                 'tqdm']
 
+print("WELCOME TO SETUP SEAQUBE")
+print(setuptools.find_packages())
+
 # Function that takes several arguments. It assigns these values to our package.
 setuptools.setup(
     # Distribution name the package. Name must be unique so adding your username at the end is common.
     name="seaqube",
     # Version number of your package. Semantic versioning is commonly used.
-    version="0.0.7-beta",
+    version="0.0.8-beta",
     # Author name.
     author="Benjamin Manns",
     # Author's email address.
     author_email="benjamin.manns@mni.thm.de",
-    package_data={'': ['seaqube/benchmark/benchmark_datasets/*']},
+    package_data={'seaqube.benchmark': ['benchmark_datasets/*.csv']},
     include_package_data=True,
     # Short description that will show on the PyPi page.
     description="Semantic Quality Benchmark for Word Embeddings, i.e. Natural Language Models in Python. The shortname is `SeaQuBe` or `seaqube`. Simple call it '| ˈsi: kjuːb |'",

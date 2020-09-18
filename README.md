@@ -15,6 +15,9 @@ However, this package provide also implementation of
 
 External lib with:
 
+# todo: nlp.model.wv.__dict__['index2word'] = nlp.model.vocabs()
+# nlp.model.wv.__dict__['vectors'] = nlp.model.matrix()
+
 
 and with:
 
@@ -26,3 +29,8 @@ python
 
 Standart Datset provided from: https://github.com/vecto-ai
 
+
+# Usage of self generated models with NLP Loader:
+--> This makes it easier
+nlp = SeaQuBeNLPLoader.load_model_from_tin_can(model.get(), 'small_model')
+nlp("Hi")
