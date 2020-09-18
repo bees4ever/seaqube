@@ -74,6 +74,7 @@ def get_shipped_test_set_path(category, name):
 
     path = join(base_path, name + ".csv")
 
+    print("DEBUGGGG: LOAD=", path)
     if not exists(path):
         raise KeyError(f"Provided test set with name={name} does not exist")
 
