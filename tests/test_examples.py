@@ -7,9 +7,22 @@ This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in 
 from os.path import join, basename, dirname
 import unittest
 
-from seaqube.nlp.seaqube_model import SeaQuBeCompressLoader
-from seaqube.tools.io import dill_dumper
-from seaqubemodel.BaseModelWrapper import BaseFTGensimModel
+from seaqube.nlp.seaqube_model import SeaQuBeCompressLoader, BaseModelWrapper
+from seaqube.nlp.tools import gensim_we_model_to_custom_we_model
+
+
+class BaseFTGensimModel(BaseModelWrapper):
+    def get_config(self):
+        return dict(sg=self.model.sg, cbow_mean=self.model.cbow_mean, size=self.model.vector_size,
+                    alpha=self.model.alpha, min_alpha=self.model.min_alpha, min_n=self.model.wv.min_n,
+                    max_n=self.model.wv.max_n, window=self.model.window, min_count=self.model.vocabulary.min_count,
+                    sample=self.model.vocabulary.sample, negative=self.model.negative, workers=self.model.workers,
+                    class_name=str(self))
+
+    def _wrap_nlp_model(self, model):
+        return gensim_we_model_to_custom_we_model(model)
+
+
 
 
 class TestExampleBasicAugmentation(unittest.TestCase):
