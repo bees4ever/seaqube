@@ -11,7 +11,7 @@ from abc import abstractmethod
 import os
 
 from seaqube.nlp.types import SeaQuBeWordEmbeddingsModel
-from seaqube.package_config import package_path
+from seaqube.package_config import package_path, log
 from seaqube.tools.types import Configable
 
 
@@ -74,7 +74,7 @@ def get_shipped_test_set_path(category, name):
 
     path = join(base_path, name + ".csv")
 
-    print("DEBUGGGG: LOAD=", path)
+    log.debug("load path = " + path)
     if not exists(path):
         raise KeyError(f"Provided test set with name={name} does not exist")
 

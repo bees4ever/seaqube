@@ -21,7 +21,6 @@ from seaqube.tools.math import sif
 from seaqube.tools.types import Configable
 
 
-
 class SeaQuBeNLPToken:
     def __init__(self, text, vector):
         self.text = text
@@ -163,7 +162,7 @@ class BaseModelWrapper(Configable):
     def define_epochs(self):
         pass
 
-    def process(self, data):
+    def train_on_corpus(self, data):
         self.epochs = self.define_epochs()
         self.data = data
         self.model = self.define_model()

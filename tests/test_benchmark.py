@@ -51,7 +51,7 @@ class BaseFTGensimModel(BaseModelWrapper):
         return gensim_we_model_to_custom_we_model(model)
 
 
-class SmallModel(BaseFTGensimModel):
+class SmallFTModel(BaseFTGensimModel):
     def define_epochs(self):
         return 1000
 

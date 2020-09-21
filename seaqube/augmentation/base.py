@@ -69,6 +69,12 @@ class BaseAugmentation(Configable):
         if self.input_type() == "text" and doc is not None:
             return self.augmentation_implementation(sentenceize_corpus([doc], verbose=False)[0])
 
+    def augment(self, text):
+        """
+        A wrapper of doc_augment to integrate SeaQuBe Augmentation Classes smoothly into NLPAUG
+        """
+        return [sentenceize_corpus([doc])[0] for doc in self.doc_augment(text=text)]
+
     @abstractmethod
     def input_type(self):
         """
