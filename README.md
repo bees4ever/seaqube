@@ -41,44 +41,54 @@ nlp("Hi")
 
 *See also: examples/basic_augmentation jupyter notebook*
 
+
+#### Import all Augmentation methods
 ````python
-# Import all Augmentation methods
 from seaqube.augmentation.word import Active2PassiveAugmentation, EDAAugmentation, TranslationAugmentation, EmbeddingAugmentation
 from seaqube.augmentation.char import QwertyAugmentation
 from seaqube.augmentation.corpus import UnigramAugmentation
 from seaqube.tools.io import load_json
-
-# prepare corpus and sample data
+````
+#### Prepare corpus and sample data
+````python
 text = 'The quick brown fox jumps over the lazy dog .'
 corpus = load_json(join(dirname(__file__), "..", "examples", "sick_full_corpus.json"))
-#print(corpus)
+````
 
-# set up all augmentations
+### Set up all augmentations:
 
-# a (experimental) active to passive voice transformer. Only one sentences / doc to another
+#### A (experimental) active to passive voice transformer. Only one sentences / doc to another.
+````python
 a2p = Active2PassiveAugmentation()
+````
 
-# easy-data augmentation method implementation (random word swap, insertion, deletion and replacement with synonyms)
+#### Easy-data augmentation method implementation (random word swap, insertion, deletion and replacement with synonyms).
+````python
 eda = EDAAugmentation(max_length=2)
+````
 
-# translate text to other language and back (with Google Translater)
+#### Translate text to other language and back (with Google Translater).
+````python
 translate = TranslationAugmentation(max_length=2)
-
-# replace words by a similiar one using another word embedding
+````
+#### Replace words by a similar one using another word embedding.
 embed = EmbeddingAugmentation(max_length=2)
+````
 
-# insert typos on text based on a qwerty-keyboard
+###### insert typos on text based on a qwerty-keyboard
+````python
 qwerty = QwertyAugmentation(replace_rate=0.07, max_length=2)
+````
 
-# based on the UDA algorithm, only the Unigram method, which replace low meaning full words with other low meaning full words
-# this method needs a corpus, because it need to detect low meaningfull words
+#### Based on the UDA algorithm, only the Unigram method, which replace low meaning full words with other low meaning full words. This method needs a corpus, because it need to detect low meaningfull words
+````python
 unigram = UnigramAugmentation(corpus=corpus, max_length=2)
+````
 
 
-
-## API - Usage
-# Every augmentation object have the same possibility
-
+### API - Usage
+#### Every augmentation object have the same possibility
+````python
 # 1. augmenting a string - same syntax as NLPAUG (https://github.com/makcedward/nlpaug)
 print(qwerty.augment(text))
 # or
@@ -94,11 +104,11 @@ print(eda(corpus[0:200]))
 
 # 4. Active2Passive is still experimental:
 a2p.doc_augment(doc=['someone', 'is', 'not', 'reading', 'the', 'email'])
+````
 
 
-
-## We want to apply a method on a corpus, train a model and meassure the performance
-
+#### We want to apply a method on a corpus, train a model and meassure the performance
+````python
 # tidy up RAM
 del unigram, embed, translate
 corpus_augmented = eda(corpus[0:200]) # augment a small subset
@@ -137,7 +147,10 @@ model = FTModelStd500V5()
 nlp = SeaQuBeCompressLoader.load_compressed_model(join(dirname(__file__), "..", "examples", "example_model_compressed.dill"), "example")
 
 del model
+````
 
+#### Perform the Semantic Quality Analysis with Benchmark Tools
+````python
 from seaqube.benchmark.corpus4ir import Corpus4IRBenchmark
 from seaqube.benchmark.wordanalogy import WordAnalogyBenchmark
 from seaqube.benchmark.wordsimilarity import WordSimilarityBenchmark
