@@ -13,15 +13,15 @@ import os
 from seaqube.nlp.types import SeaQuBeWordEmbeddingsModel
 from seaqube.package_config import package_path, log
 from seaqube.tools.types import Configable
-from json import JSONEncoder
 
-class BenchmarkScore(JSONEncoder):
+
+class BenchmarkScore:
     def __init__(self, score, payload=None):
         self.score = score
         self.payload = payload
 
-    def default(self, o):
-            return {'score': o.score, 'payload': str(o.payload)}
+    def to_dict(self):
+            return {'score': self.score, 'payload': str(self.payload)}
 
     def __str__(self):
         return f"(score={self.score}, payload={str(self.payload)})"
