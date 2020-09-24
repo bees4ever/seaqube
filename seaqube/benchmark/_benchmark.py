@@ -66,6 +66,7 @@ class DataSetBasedWordEmbeddingBenchmark(BaseWordEmbeddingBenchmark):
 shipped_datasets = {
         'word-similarity': join(package_path, "benchmark", "benchmark_datasets", "word-similarity", "monolingual", "en"),
         'word-analogy': join(package_path, "benchmark", "benchmark_datasets", "word-analogy", "monolingual", "en"),
+        'word-outliers': join(package_path, "benchmark", "benchmark_datasets", "outlier-detection", "monolingual", "en")
     }
 
 

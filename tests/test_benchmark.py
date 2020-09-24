@@ -9,6 +9,7 @@ import unittest
 
 from seaqube.benchmark.corpus4ir import Corpus4IRBenchmark
 from seaqube.benchmark.wordanalogy import WordAnalogyBenchmark
+from seaqube.benchmark.wordoutliers import WordOutliersBenchmark
 from seaqube.benchmark.wordsimilarity import WordSimilarityBenchmark
 from seaqube.nlp.seaqube_model import SeaQuBeNLPLoader, SeaQuBeCompressLoader
 from seaqube.nlp.tools import tokenize_corpus
@@ -104,6 +105,17 @@ class TestWordAnalogyBenchmark(unittest.TestCase):
 
         for test_set in ['semeval', 'google-analogies', 'sat', 'msr', 'jair']:
             simi_bench = WordAnalogyBenchmark(test_set)
+            res = simi_bench(nlp.model)
+            print(test_set, "result = ", res)
+            self.assertAlmostEqual(res.score, 0.0, delta=0.01)
+
+
+class TestWordOutlierBenchmark(unittest.TestCase):
+    def test_simple_benchmark(self):
+        nlp = SeaQuBeCompressLoader.load_compressed_model(model_path(), 'test_model')
+
+        for test_set in ['8-8-8', 'wikisem500']:
+            simi_bench = WordOutliersBenchmark(test_set)
             res = simi_bench(nlp.model)
             print(test_set, "result = ", res)
             self.assertAlmostEqual(res.score, 0.0, delta=0.01)

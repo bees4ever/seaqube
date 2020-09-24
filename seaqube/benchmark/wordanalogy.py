@@ -44,6 +44,9 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
             if row.word1 in model.vocabs() and row.word2 in model.vocabs() and row.word3 in model.vocabs() and row.target in model.vocabs():
                 considered_lines += 1  # all words need to be in the vocab list, otherwise it makes no sense
                 calculated_wv = model.wv[row.word1] - model.wv[row.word2] + model.wv[row.word3]
+                print("most sim", self.most_similar(calculated_wv, model))
+                print("target", row.target)
+
                 word = self.most_similar(calculated_wv, model)[0][0]
                 correct_hits += int(word == row.target)
 
