@@ -16,6 +16,10 @@ from seaqube.tools.math import cosine
 
 
 class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
+    def __init__(self, test_set, method="3CosAdd"):
+        self.method = method
+        super(WordAnalogyBenchmark).__init__(test_set=test_set)
+
     def method_name(self):
         return "wordanalogy"
 
@@ -73,17 +77,17 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
 
         return self._3_cos_add(a_h, b_h, c_h, model)
 
-    def __call__(self, model: SeaQuBeWordEmbeddingsModel, method="3CosAdd") -> BenchmarkScore:
+    def __call__(self, model: SeaQuBeWordEmbeddingsModel) -> BenchmarkScore:
         considered_lines = 0
         correct_hits = 0
 
-        if method == "3CosAdd":
+        if self.method == "3CosAdd":
             measure_method = self._3_cos_add
-        elif method == 'VectorCalc':
+        elif self.method == 'VectorCalc':
             measure_method = self._vector_calc
-        elif method == 'PairDir':
+        elif self.method == 'PairDir':
             measure_method = self._pair_dir
-        elif method == 'SpaceEvolution':
+        elif self.method == 'SpaceEvolution':
             measure_method = self._space_evolution
         else:
             raise ValueError(f"Argument `method` must be in one of [3CosAdd, VectorCalc, PairDir, SpaceEvolution]")
