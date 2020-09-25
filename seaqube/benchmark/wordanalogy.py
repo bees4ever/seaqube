@@ -18,7 +18,7 @@ from seaqube.tools.math import cosine
 class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
     def __init__(self, test_set, method="3CosAdd"):
         self.method = method
-        super(WordAnalogyBenchmark).__init__(test_set=test_set)
+        super(WordAnalogyBenchmark, self).__init__(test_set)
 
     def method_name(self):
         return "wordanalogy"
