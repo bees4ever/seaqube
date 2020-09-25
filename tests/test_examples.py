@@ -17,7 +17,7 @@ class BaseFTGensimModel(BaseModelWrapper):
                     alpha=self.model.alpha, min_alpha=self.model.min_alpha, min_n=self.model.wv.min_n,
                     max_n=self.model.wv.max_n, window=self.model.window, min_count=self.model.vocabulary.min_count,
                     sample=self.model.vocabulary.sample, negative=self.model.negative, workers=self.model.workers,
-                    class_name=str(self))
+                    epochs=self.define_epochs(), class_name=str(self))
 
     def _wrap_nlp_model(self, model):
         return gensim_we_model_to_custom_we_model(model)
