@@ -286,7 +286,7 @@ class TestAugmentation(unittest.TestCase):
         plain_output = streamer(TEST_CORPUS)
         print(plain_output)
 
-        self.assertAlmostEqual(len(plain_output), 97, delta=3)
+        self.assertAlmostEqual(len(plain_output), 102, delta=3)
 
     def test_chaining(self):
         import logging
