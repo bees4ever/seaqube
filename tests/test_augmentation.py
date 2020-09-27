@@ -282,7 +282,7 @@ class TestActive2PassiveAugmentation(unittest.TestCase):
 
 class TestAugmentation(unittest.TestCase):
     def test_streaming(self):
-        streamer = AugmentationStreamer([TranslationAugmentation(max_length=2), QwertyAugmentation(seed=424242, max_length=2)], reduction_chain=[UniqueCorpusReduction()])
+        streamer = AugmentationStreamer([TranslationAugmentation(max_length=1), QwertyAugmentation(seed=424242, max_length=2)], reduction_chain=[UniqueCorpusReduction()])
         plain_output = streamer(TEST_CORPUS)
         print(plain_output)
 

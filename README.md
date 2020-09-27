@@ -164,3 +164,13 @@ print(wab(nlp.model))  # score=0.0
 c4ir = Corpus4IRBenchmark(corpus[0:200])  # need the original corpus for setting up IR
 print(c4ir(nlp.model))
 ````
+
+
+## Setup Dev Environment
+
+#### Tools
+
+````bash
+ npm install generate-changelog -g 
+ # see: https://www.npmjs.com/package/generate-changelog
+````
