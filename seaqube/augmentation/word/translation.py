@@ -87,9 +87,9 @@ class TranslationAugmentation(SingleprocessingAugmentation):
         if self.timeout is None:
             return
 
-        diff = time.time() - self.last_call + self.timeout
+        diff = time.time() - self.last_call - self.timeout
         if diff < 0:
-            time.sleep(diff)
+            time.sleep(abs(diff))
 
         self.last_call = time.time()
         return

@@ -3,7 +3,7 @@ Copyright (c) 2020 by Benjamin Manns
 This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
 :author: Benjamin Manns
 """
-
+import time
 import unittest
 import pytest
 
@@ -126,6 +126,17 @@ class TestUnigramAugmentation(unittest.TestCase):
 
 
 class TestTranslationAugmentation(unittest.TestCase):
+    def test_with_timeout(self):
+        start = time.time()
+        translation = TranslationAugmentation(timeout=0.5)
+
+        translation.augment(QUICK_FOX)
+        end = time.time()
+        min_waiting = 0.5 * 9
+        self.assertLess(min_waiting, end-start)
+
+    
+
     def test_translation_augmentation(self):
         correct_result = [['the', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog'],
                           ['the', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog'],
