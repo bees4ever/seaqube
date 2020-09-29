@@ -6,6 +6,8 @@ This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in 
 
 
 import copy
+import time
+
 from googletrans import Translator
 
 from seaqube.augmentation.base import SingleprocessingAugmentation
@@ -35,7 +37,7 @@ class TranslationAugmentation(SingleprocessingAugmentation):
     }
     """
 
-    def __init__(self, base_lang='en', max_length: int = 100, remove_duplicates: bool = False,
+    def __init__(self, base_lang='en', max_length: int = 100, remove_duplicates: bool = False, timeout: int = None,
                  multiprocess: bool = True, seed: int = None):
         """
         Set up the translator for a given start / base language, default is en
@@ -43,6 +45,7 @@ class TranslationAugmentation(SingleprocessingAugmentation):
             base_lang: from where to and back translate and
             max_length: cut the produced text at a limit to prevent overflow
             remove_duplicates: remove after augmentation for duplicates
+            timeout: number in seconds to wait until to fire next translation
             multiprocess: if augmentation class implements the multiprocessing call, then it can be turn off again with
                     this flag, most for testing purpose
             seed: fix the randomness with a seed for testing purpose
@@ -53,6 +56,8 @@ class TranslationAugmentation(SingleprocessingAugmentation):
         self.remove_duplicates = remove_duplicates
         self.multiprocess = multiprocess
         self.seed = seed
+        self.timeout = timeout
+        self.last_call = 0.0
         super(TranslationAugmentation, self).__init__()
 
 
@@ -78,6 +83,17 @@ class TranslationAugmentation(SingleprocessingAugmentation):
     def augmentation_implementation(self, sentence):
         return self.translate_doc(sentence)
 
+    def __handle_timeout(self):
+        if self.timeout is None:
+            return
+
+        diff = time.time() - self.last_call + self.timeout
+        if diff < 0:
+            time.sleep(diff)
+
+        self.last_call = time.time()
+        return
+
     def translate_doc(self, text):
         translation_pipelines = [
             ['fr'],
@@ -99,6 +115,7 @@ class TranslationAugmentation(SingleprocessingAugmentation):
             for i, lang in enumerate(translation_pipeline):
                 next_lang = translation_pipeline[i+1]
                 try:
+                    self.__handle_timeout()
                     tmp_text = self.translator.translate(tmp_text, dest=next_lang, src=lang).text
                 except Exception:
                     log.info("Some translation did not work, we try it later again")
