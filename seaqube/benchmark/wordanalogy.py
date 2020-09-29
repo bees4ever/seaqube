@@ -84,17 +84,14 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
         # all words need to be in the vocab list, otherwise it makes no sense
 
         if row.word1 in self.model.vocabs() and row.word2 in self.model.vocabs() and row.word3 in self.model.vocabs() and row.target in self.model.vocabs():
-            log.debug(f"WordAnalogy of these relation:{row.word1}:{row.word2}::{row.word3}:?")
-            print(f"WordAnalogy of these relation:{row.word1}:{row.word2}::{row.word3}:?")
+            log.warn(f"WordAnalogy of these relation:{row.word1}:{row.word2}::{row.word3}:?")
 
-            log.debug(f"WordAnalogy: target={row.target}")
-            print("target", row.target)
-            detected_outliers = self.measure_method(self.model.wv[row.word1], self.model.wv[row.word2], self.model.wv[row.word3], self.model)
+            log.warn(f"WordAnalogy: target={row.target}")
+            detected_targets = self.measure_method(self.model.wv[row.word1], self.model.wv[row.word2], self.model.wv[row.word3], self.model)
 
-            log.debug(f"WordAnalogy: detected_outliers={detected_outliers}")
-            print(f"WordAnalogy: detected_outliers={detected_outliers}")
+            log.warn(f"WordAnalogy: detected_targets={detected_targets}")
 
-            word = detected_outliers[0][0]
+            word = detected_targets[0][0]
             return int(word == row.target)
         else:
             return 0
