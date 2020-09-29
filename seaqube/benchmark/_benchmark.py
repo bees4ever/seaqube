@@ -29,6 +29,7 @@ class BenchmarkScore:
     def __repr__(self):
         return str(self)
 
+
 class BaseWordEmbeddingBenchmark(Configable):
     @abstractmethod
     def method_name(self):

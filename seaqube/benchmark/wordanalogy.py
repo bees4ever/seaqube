@@ -6,13 +6,14 @@ This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in 
 
 from pandas import read_csv
 import numpy as np
-from progressbar import progressbar
+from progressbar import progressbar, ProgressBar
 
 from seaqube.benchmark._benchmark import DataSetBasedWordEmbeddingBenchmark, get_shipped_test_set_path, \
     get_list_of_shipped_test_sets, BenchmarkScore
 from seaqube.nlp.types import SeaQuBeWordEmbeddingsModel
 from seaqube.package_config import log
 from seaqube.tools.math import cosine
+from seaqube.tools.umproc import ForEach
 
 
 class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
@@ -77,38 +78,51 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
 
         return self._3_cos_add(a_h, b_h, c_h, model)
 
+    def apply_on_testset_line(self, rowitem):
+        _, row = rowitem
+
+        # all words need to be in the vocab list, otherwise it makes no sense
+
+        if row.word1 in self.model.vocabs() and row.word2 in self.model.vocabs() and row.word3 in self.model.vocabs() and row.target in self.model.vocabs():
+            log.debug(f"WordAnalogy of these relation:{row.word1}:{row.word2}::{row.word3}:?")
+            print(f"WordAnalogy of these relation:{row.word1}:{row.word2}::{row.word3}:?")
+
+            log.debug(f"WordAnalogy: target={row.target}")
+            print("target", row.target)
+            detected_outliers = self.measure_method(self.model.wv[row.word1], self.model.wv[row.word2], self.model.wv[row.word3], self.model)
+
+            log.debug(f"WordAnalogy: detected_outliers={detected_outliers}")
+            print(f"WordAnalogy: detected_outliers={detected_outliers}")
+
+            word = detected_outliers[0][0]
+            return int(word == row.target)
+        else:
+            return 0
+
     def __call__(self, model: SeaQuBeWordEmbeddingsModel) -> BenchmarkScore:
         considered_lines = 0
         correct_hits = 0
 
         if self.method == "3CosAdd":
-            measure_method = self._3_cos_add
+            self.measure_method = self._3_cos_add
         elif self.method == 'VectorCalc':
-            measure_method = self._vector_calc
+            self.measure_method = self._vector_calc
         elif self.method == 'PairDir':
-            measure_method = self._pair_dir
+            self.measure_method = self._pair_dir
         elif self.method == 'SpaceEvolution':
-            measure_method = self._space_evolution
+            self.measure_method = self._space_evolution
         else:
             raise ValueError(f"Argument `method` must be in one of [3CosAdd, VectorCalc, PairDir, SpaceEvolution]")
 
-        for rowitem in progressbar(self.test_set.iterrows()):
-            _, row = rowitem
-            if row.word1 in model.vocabs() and row.word2 in model.vocabs() and row.word3 in model.vocabs() and row.target in model.vocabs():
-                considered_lines += 1  # all words need to be in the vocab list, otherwise it makes no sense
+        self.model = model
 
-                log.debug(f"WordAnalogy of these relation:{row.word1}:{row.word2}::{row.word3}:?")
-                print(f"WordAnalogy of these relation:{row.word1}:{row.word2}::{row.word3}:?")
+        multi_wrapper = ForEach(self.apply_on_testset_line)
+        prg = ProgressBar(max_value=len(self.test_set))
 
-                log.debug(f"WordAnalogy: target={row.target}")
-                print("target", row.target)
-                detected_outliers = measure_method(model.wv[row.word1], model.wv[row.word2], model.wv[row.word3], model)
-
-                log.debug(f"WordAnalogy: detected_outliers={detected_outliers}")
-                print(f"WordAnalogy: detected_outliers={detected_outliers}")
-
-                word = detected_outliers[0][0]
-                correct_hits += int(word == row.target)
+        for correct_flag in progressbar(multi_wrapper(self.test_set.iterrows())):
+            considered_lines += 1
+            correct_hits += correct_flag
+            prg.update(prg.value + 1)
 
         if considered_lines == 0:
             return BenchmarkScore(0.0)
