@@ -116,10 +116,10 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
 
         self.model = model
 
-        multi_wrapper = ForEach(self.apply_on_testset_line)
+        multi_wrapper = ForEach(self.apply_on_testset_line, max_cpus=64)  # TODO hrd coded under development
         prg = ProgressBar(max_value=len(self.test_set))
 
-        for correct_flag in progressbar(multi_wrapper(self.test_set.iterrows())):
+        for correct_flag in multi_wrapper(self.test_set.iterrows()):
             considered_lines += 1
             correct_hits += correct_flag
             prg.update(prg.value + 1)
