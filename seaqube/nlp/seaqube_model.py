@@ -136,11 +136,12 @@ class SeaQuBeCompressLoader:
 
 
 class BaseModelWrapper(Configable):
-    def __init__(self):
+    def __init__(self, max_cpus=None):
         self.epochs = -1
         self.model = None
         self.__processed = False
         self.data = None
+        self.max_cpus = max_cpus
 
     @abstractmethod
     def define_model(self):
@@ -148,7 +149,15 @@ class BaseModelWrapper(Configable):
 
     @property
     def cpus(self):
-        return multiprocessing.cpu_count()
+        cpus = multiprocessing.cpu_count()
+        
+        # limit the number of cpu, if inside a shared machine or something else 
+        if self.max_cpus is None:
+            return cpus
+
+        if cpus > self.max_cpus:
+            return 64
+        return cpus
 
     @property
     def name(self):
