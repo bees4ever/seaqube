@@ -46,6 +46,7 @@ class BaseWordEmbeddingBenchmark(Configable):
 
 class DataSetBasedWordEmbeddingBenchmark(BaseWordEmbeddingBenchmark):
     def __init__(self, test_set):
+        self.test_set_name=test_set
         if isinstance(test_set, str):
             self.test_set = self._load_shipped_test_set(test_set)
         elif isinstance(test_set, DataFrame):
@@ -64,7 +65,7 @@ class DataSetBasedWordEmbeddingBenchmark(BaseWordEmbeddingBenchmark):
         pass
 
     def get_config(self):
-        return dict(class_name=str(self), test_set=self.test_set)
+        return dict(class_name=str(self), test_set=self.test_set_name)
 
 
 shipped_datasets = {
