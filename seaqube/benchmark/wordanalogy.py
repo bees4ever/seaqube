@@ -80,12 +80,12 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
         return self._3_cos_add(a_h, b_h, c_h, model)
 
     def apply_on_testset_line(self, row):
-        log.warn(f"WordAnalogy of these relation:{row.word1}:{row.word2}::{row.word3}:?")
+        log.info(f"WordAnalogy of these relation:{row.word1}:{row.word2}::{row.word3}:?")
 
-        log.warn(f"WordAnalogy: target={row.target}")
+        log.info(f"WordAnalogy: target={row.target}")
         detected_targets = self.measure_method(self.model.wv[row.word1], self.model.wv[row.word2], self.model.wv[row.word3], self.model)
 
-        log.warn(f"WordAnalogy: detected_targets={detected_targets}")
+        log.info(f"WordAnalogy: detected_targets={detected_targets}")
 
         word = detected_targets[0][0]
         return int(word == row.target)
