@@ -17,8 +17,9 @@ from seaqube.tools.umproc import ForEach
 
 
 class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
-    def __init__(self, test_set, method="3CosAdd"):
+    def __init__(self, test_set, method="3CosAdd", max_cpus=None):
         self.method = method
+        self.max_cpus=max_cpus
         super(WordAnalogyBenchmark, self).__init__(test_set)
 
     def method_name(self):
@@ -78,26 +79,19 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
 
         return self._3_cos_add(a_h, b_h, c_h, model)
 
-    def apply_on_testset_line(self, rowitem):
-        _, row = rowitem
+    def apply_on_testset_line(self, row):
+        log.warn(f"WordAnalogy of these relation:{row.word1}:{row.word2}::{row.word3}:?")
 
-        # all words need to be in the vocab list, otherwise it makes no sense
+        log.warn(f"WordAnalogy: target={row.target}")
+        detected_targets = self.measure_method(self.model.wv[row.word1], self.model.wv[row.word2], self.model.wv[row.word3], self.model)
 
-        if row.word1 in self.model.vocabs() and row.word2 in self.model.vocabs() and row.word3 in self.model.vocabs() and row.target in self.model.vocabs():
-            log.warn(f"WordAnalogy of these relation:{row.word1}:{row.word2}::{row.word3}:?")
+        log.warn(f"WordAnalogy: detected_targets={detected_targets}")
 
-            log.warn(f"WordAnalogy: target={row.target}")
-            detected_targets = self.measure_method(self.model.wv[row.word1], self.model.wv[row.word2], self.model.wv[row.word3], self.model)
-
-            log.warn(f"WordAnalogy: detected_targets={detected_targets}")
-
-            word = detected_targets[0][0]
-            return int(word == row.target)
-        else:
-            return 0
+        word = detected_targets[0][0]
+        return int(word == row.target)
+        
 
     def __call__(self, model: SeaQuBeWordEmbeddingsModel) -> BenchmarkScore:
-        considered_lines = 0
         correct_hits = 0
 
         if self.method == "3CosAdd":
@@ -113,14 +107,26 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
 
         self.model = model
 
-        multi_wrapper = ForEach(self.apply_on_testset_line, max_cpus=64)  # TODO hrd coded under development
+        # first filter dataset
+        # all words need to be in the vocab list, otherwise it makes no sense
+
+        filtered_rows = []
+        for rowitem in progressbar(self.test_set.iterrows()):
+            _, row = rowitem
+
+            if row.word1 in self.model.vocabs() and row.word2 in self.model.vocabs() and row.word3 in self.model.vocabs() and row.target in self.model.vocabs():
+                filtered_rows.append(row)
+
+        # then use filtered row for hard work
+        multi_wrapper = ForEach(self.apply_on_testset_line, max_cpus=self.max_cpus)
         prg = ProgressBar(max_value=len(self.test_set))
 
-        for correct_flag in multi_wrapper(self.test_set.iterrows()):
-            considered_lines += 1
+        for correct_flag in multi_wrapper(filtered_rows):
             correct_hits += correct_flag
             prg.update(prg.value + 1)
 
+        considered_lines = len(filtered_rows)
+        
         if considered_lines == 0:
             return BenchmarkScore(0.0)
             
