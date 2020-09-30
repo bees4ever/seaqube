@@ -184,6 +184,9 @@ class TestActive2PassiveAugmentation(unittest.TestCase):
               'disclosure', ';', 'seldom', 'can', 'it', 'happen', 'that', 'something', 'is', 'not', 'a', 'little',
               'disguised', 'or', 'a', 'little', 'mistaken', '.']]) == [['Disclosure', 'has', 'been', 'completed', 'by', 'truth', 'seldom', ',', 'very', 'seldom', ',', 'belong', 'to', 'any', 'human', ';', 'seldom', 'can', 'it', 'happen', 'that', 'something', 'is', 'not', 'a', 'little', 'disguised', 'or', 'a', 'little', 'mistaken', '.']]
 
+    def test_original_on(self):
+        a2p = Active2PassiveAugmentation(original_too=True)
+        assert a2p.augment("Simon reads a book. Jenny drinks tea.") == ['A book is read by Simon . Tea is drunk by Jenny.', 'simon reads a book . jenny drinks tea.']
 
     def test_exception(self):
         with pytest.raises(ValueError):

@@ -9,6 +9,7 @@ import spacy
 from pyinflect import getAllInflections
 
 from seaqube.augmentation.base import SingleprocessingAugmentation
+from seaqube.nlp.tools import tokenize_corpus
 from seaqube.package_config import log
 
 
@@ -32,7 +33,7 @@ tenses = Tenses()
 
 class Active2PassiveAugmentation(SingleprocessingAugmentation):
     """
-    Rules for active to passive including backshifting nad more:
+    Rules for active to passive including backshifting and more:
 
     - https://www.ego4u.com/en/cram-up/grammar/tenses
     - https://github.com/explosion/spaCy/issues/2767
@@ -49,11 +50,12 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
         """
         return "text"
 
-    def __init__(self, remove_duplicates: bool = False, multiprocess: bool = True, seed: int = None):
+    def __init__(self, remove_duplicates: bool = False, original_too: bool = False, multiprocess: bool = True, seed: int = None):
         """
         Set up the spacy backend to use it for NER
         Args:
             remove_duplicates: remove after augmentation for duplicates
+            original_too: if the original input should be added to the result
               multiprocess: if augmentation class implements the multiprocessing call, then it can be turn off again with
                     this flag, most for testing purpose
             seed: fix the randomness with a seed for testing purpose
@@ -68,6 +70,7 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
         self.seed = seed
         self.tenses = Tenses()
         self.multiprocess = multiprocess
+        self.original_too = original_too
         super(Active2PassiveAugmentation, self).__init__()
 
     def get_config(self):
@@ -76,7 +79,7 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
         Returns: dict of object config
 
         """
-        return dict(remove_duplicates=self.remove_duplicates, seed=self.seed, spacy=str(self.nlp), class_name=str(self))
+        return dict(remove_duplicates=self.remove_duplicates, original_too=self.original_too, seed=self.seed, spacy=str(self.nlp), class_name=str(self))
 
     def shortname(self):
         return "active2passive"
@@ -89,11 +92,14 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
             except ValueError as ex:
                 log.info(
                     f"A value error raised with following content: {str(ex)} and traceback: {str(ex.__traceback__)}")
+        result = []
+        if len(parts) > 0:
+            result = [reduce(lambda a, b: a + b, parts)]
 
-        if len(parts) == 0:
-            return parts
+        if self.original_too:
+            result.append(tokenize_corpus([text], verbose=False)[0])
 
-        return [reduce(lambda a, b: a + b, parts)]
+        return result
 
     def get_sentene_tense(self, tokens):
         """
