@@ -17,9 +17,10 @@ from seaqube.tools.umproc import ForEach
 
 
 class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
-    def __init__(self, test_set, method="3CosAdd", max_cpus=None):
+    def __init__(self, test_set, method="3CosAdd", multiprocessing: bool = False, max_cpus=None):
         self.method = method
-        self.max_cpus=max_cpus
+        self.max_cpus = max_cpus
+        self.multiprocessing = multiprocessing
         super(WordAnalogyBenchmark, self).__init__(test_set)
 
     def method_name(self):
@@ -109,7 +110,6 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
 
         # first filter dataset
         # all words need to be in the vocab list, otherwise it makes no sense
-
         filtered_rows = []
         for rowitem in progressbar(self.test_set.iterrows()):
             _, row = rowitem
@@ -117,9 +117,16 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
             if row.word1 in self.model.vocabs() and row.word2 in self.model.vocabs() and row.word3 in self.model.vocabs() and row.target in self.model.vocabs():
                 filtered_rows.append(row)
 
+
+
         # then use filtered row for hard work
-        multi_wrapper = ForEach(self.apply_on_testset_line, max_cpus=self.max_cpus)
         prg = ProgressBar(max_value=len(self.test_set))
+        if self.multiprocessing:
+            multi_wrapper = ForEach(self.apply_on_testset_line, max_cpus=self.max_cpus)
+        else:
+            def multi_wrapper(rows):
+                for doc in rows:
+                    yield self.apply_on_testset_line(doc)
 
         for correct_flag in multi_wrapper(filtered_rows):
             correct_hits += correct_flag

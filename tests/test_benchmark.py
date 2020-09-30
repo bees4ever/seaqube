@@ -96,6 +96,13 @@ class TestWordSimilarityBenchmark(unittest.TestCase):
 
 
 class TestWordAnalogyBenchmark(unittest.TestCase):
+    def test_multiproc(self):
+        nlp = SeaQuBeCompressLoader.load_compressed_model(model_path(), 'test_model')
+        simi_bench = WordAnalogyBenchmark('google-analogies', max_cpus=10, multiprocessing=True)
+        res = simi_bench(nlp.model)
+        print("res = ", res)
+        self.assertAlmostEqual(res.score, 0.0, delta=0.01)
+
     def test_simple_benchmark(self):
         # need to load a simple model, i.e. small dataset
         #model = SmallModel()
