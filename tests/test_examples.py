@@ -126,12 +126,16 @@ class TestExampleBasicAugmentation(unittest.TestCase):
         from seaqube.benchmark.corpus4ir import Corpus4IRBenchmark
         from seaqube.benchmark.wordanalogy import WordAnalogyBenchmark
         from seaqube.benchmark.wordsimilarity import WordSimilarityBenchmark
+        from seaqube.benchmark.wordoutliers import WordOutliersBenchmark
 
         wsb = WordSimilarityBenchmark(test_set='simlex999')
         print(wsb(nlp.model))  # score=0.008905456556563954
 
         wab = WordAnalogyBenchmark('google-analogies')
         print(wab(nlp.model))  # score=0.0
+
+        wob = WordOutliersBenchmark('wikisem500')
+        print(wob(nlp.model))  # score=0.0
 
         c4ir = Corpus4IRBenchmark(corpus[0:200])  # need the original corpus for setting up IR
         print(c4ir(nlp.model))
