@@ -61,7 +61,7 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
         sorted_top = itertools.islice(sorted_zip, 10)  #
         del sorted_zip
         gc.collect()
-        return
+        return sorted_top
 
     def _vector_calc(self, a, b, c, model: SeaQuBeWordEmbeddingsModel):
         calculated_wv = a - b + c
