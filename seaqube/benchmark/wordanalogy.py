@@ -53,12 +53,12 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
             d = model.matrix()[i]
             res.append(cosine(d, c) - cosine(d, a) + cosine(d, b))
 
-        sorted_zip = zip(
+        sorted_zip = list(zip(
                     np.array(model.vocabs())[np.argsort(res)[::-1]], # [::-1] is for maximizing
                     np.sort(res)[::-1]
-                )
+                ))
 
-        sorted_top = itertools.islice(sorted_zip, 10)  #
+        sorted_top = sorted_zip[0:10]
         del sorted_zip
         gc.collect()
         return sorted_top
