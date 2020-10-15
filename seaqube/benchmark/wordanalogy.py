@@ -119,7 +119,7 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
         # first filter dataset
         # all words need to be in the vocab list, otherwise it makes no sense
         filtered_rows = []
-        for rowitem in progressbar(self.test_set.iterrows()):
+        for rowitem in progressbar(self.test_set.iterrows(), max_value=len(self.test_set)):
             _, row = rowitem
 
             if row.word1 in self.model.vocabs() and row.word2 in self.model.vocabs() and row.word3 in self.model.vocabs() and row.target in self.model.vocabs():
@@ -128,7 +128,7 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
 
 
         # then use filtered row for hard work
-        prg = ProgressBar(max_value=len(self.test_set))
+        prg = ProgressBar(max_value=len(filtered_rows))
         if self.multiprocessing:
             multi_wrapper = ForEach(self.apply_on_testset_line, max_cpus=self.max_cpus)
         else:

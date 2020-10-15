@@ -112,7 +112,7 @@ class TestWordAnalogyBenchmark(unittest.TestCase):
 
         for test_set in ['semeval', 'google-analogies', 'sat', 'msr', 'jair']:
             for mm in ['3CosAdd', 'VectorCalc', 'PairDir', 'SpaceEvolution']:
-                simi_bench = WordAnalogyBenchmark(test_set, method=mm)
+                simi_bench = WordAnalogyBenchmark(test_set, method=mm, multiprocessing=True)
                 res = simi_bench(nlp.model)
                 print(test_set, "result = ", res)
             self.assertAlmostEqual(res.score, 0.0, delta=0.01)

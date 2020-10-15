@@ -36,7 +36,7 @@ class WordOutliersBenchmark(DataSetBasedWordEmbeddingBenchmark):
         test_run = 0
         test_succeeded = 0
 
-        for rowitem in progressbar(self.test_set.iterrows()):
+        for rowitem in progressbar(self.test_set.iterrows(), max_value=len(self.test_set)):
             _, row = rowitem
 
             words: list = load(row.words)

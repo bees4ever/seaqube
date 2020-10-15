@@ -30,7 +30,7 @@ class WordSimilarityBenchmark(DataSetBasedWordEmbeddingBenchmark):
 
     def __call__(self, model: SeaQuBeWordEmbeddingsModel) -> BenchmarkScore:
         model_sim, sheet_sim = [], []
-        for rowitem in progressbar(self.test_set.iterrows()):
+        for rowitem in progressbar(self.test_set.iterrows(), max_value=len(self.test_set)):
             _, row = rowitem
 
             if row.word1 in model.vocabs() and row.word2 in model.vocabs():
