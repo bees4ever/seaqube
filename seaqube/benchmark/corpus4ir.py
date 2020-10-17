@@ -67,8 +67,15 @@ class Corpus4IRBenchmark(BaseWordEmbeddingBenchmark):
             fn += len(relevant_documents) - len(relevant_documents.intersection(search_result_documents))
             fp += len(search_result_documents.difference(relevant_documents))
             log.debug(f"{self.__class__.__name__}: tp, fn, fp:{tp}, {fn}, {fp}")
-            precision = tp / (tp + fp)
-            recall = tp / (tp + fn)
+            
+            if (tp + fp) == 0:
+                precision = 0.0
+            else:
+                precision = tp / (tp + fp)
+            if (tp + fn) == 0:
+                recall = 0
+            else:
+                recall = tp / (tp + fn)
 
         return BenchmarkScore(f_score(precision, recall, 1), dict(tp=tp, fn=fn, fp=fp))
 
