@@ -337,21 +337,47 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
 
         elif 'pobj' in deps:
             noun_pos = deps.index('pobj')
-            if poses[noun_pos] == 'NOUN':
-                ## this is not a person, but a object (accusativ, dativ) I don't now, however, maybe with article
-                if poses[noun_pos - 1] == 'DET':
-                    passived_sentence.append(doc[noun_pos - 1])
-                    used_indecies.append(noun_pos - 1)
 
-            # there should be no article (I think)
+            backwards_index = noun_pos-1
+            backwards_index_selected = []
+            ## this is not a person, but a positional object (accusativ, dativ) I don't now, however, maybe with article
+            while poses[backwards_index] in ['ADV', 'CCONJ', 'ADJ']:
+                backwards_index_selected.append(backwards_index)
+                backwards_index -= 1
+
+            if poses[backwards_index] == 'DET':
+                while poses[backwards_index] == 'DET':
+                    backwards_index_selected.append(backwards_index)
+                    backwards_index -= 1
+
+            backwards_index += 1  # Go one step back, while has ended and there is nothing correct anymore
+
+            # we have a big list of stuff to added before object
+            det = doc[backwards_index]
+            if deps[backwards_index] == 'poss':
+                det = 'the'
+
+            backwards_index_selected.reverse()
+
+            before_noun = [doc[j] for j in backwards_index_selected]
+            if len(before_noun) > 0:
+                before_noun[0] = det
+
+            log.debug(f"[sentence2passive] found articles with appendix={str(before_noun)}")
+
+            passived_sentence += before_noun
+            used_indecies += backwards_index_selected
+            used_indecies.append(backwards_index)
+
+            # there could be some article and even adjectives in between (I think)
             passived_sentence.append(doc[noun_pos])
             used_indecies.append(noun_pos)
             # also remove a possible ADP before
-            if poses[noun_pos - 1] == 'ADP':
-                used_indecies.append(noun_pos - 1)
+            if poses[backwards_index - 1] == 'ADP':
+                used_indecies.append(backwards_index - 1)
             # also remove a possible ADP before
-            if poses[noun_pos - 1] == 'DET' and poses[noun_pos - 2] == 'ADP':
-                used_indecies.append(noun_pos - 2)
+            if poses[backwards_index - 1] == 'DET' and poses[backwards_index - 2] == 'ADP':
+                used_indecies.append(backwards_index - 2)
 
 
         else:

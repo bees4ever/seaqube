@@ -3,8 +3,11 @@ Copyright (c) 2020 by Benjamin Manns
 This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
 :author: Benjamin Manns
 """
+import random
 import time
 import unittest
+from itertools import product
+
 import pytest
 
 from seaqube.augmentation.base import AugmentationStreamer
@@ -17,6 +20,7 @@ from seaqube.augmentation.word.embedding import EmbeddingAugmentation
 from seaqube.augmentation.word.translation import TranslationAugmentation
 from seaqube.nlp.tools import tokenize_corpus, unique_2d_list
 from seaqube.tools.chainer import CallOnOneChain, ChainTerm
+from seaqube.tools.math import lazy_sample
 
 QUICK_FOX = "The quick brown fox jumps over the lazy dog"
 QUICK_FOX_TOKENIZED = tokenize_corpus([QUICK_FOX])[0]
@@ -121,6 +125,13 @@ class TestEmbeddingAugmentation(unittest.TestCase):
         embeding = EmbeddingAugmentation(seed=42, remove_duplicates=True, max_length=2)
         self.assertEqual(len(embeding(TEST_CORPUS)), 14)
 
+    def test_lazy_sample(self):
+        r = random.Random()
+        r.seed(123)
+        P = product(range(10), repeat=100)
+        L1 = lazy_sample(P, 10**100, 10, r)
+        assert len(list(L1)) == 10
+
 
 class TestUnigramAugmentation(unittest.TestCase):
     def test_call(self):
@@ -191,7 +202,7 @@ class TestActive2PassiveAugmentation(unittest.TestCase):
         a2p = Active2PassiveAugmentation()
         assert a2p([['seldom', ',', 'very', 'seldom', ',', 'does', 'complete', 'truth', 'belong', 'to', 'any', 'human',
               'disclosure', ';', 'seldom', 'can', 'it', 'happen', 'that', 'something', 'is', 'not', 'a', 'little',
-              'disguised', 'or', 'a', 'little', 'mistaken', '.']]) == [['Disclosure', 'has', 'been', 'completed', 'by', 'truth', 'seldom', ',', 'very', 'seldom', ',', 'belong', 'to', 'any', 'human', ';', 'seldom', 'can', 'it', 'happen', 'that', 'something', 'is', 'not', 'a', 'little', 'disguised', 'or', 'a', 'little', 'mistaken', '.']]
+              'disguised', 'or', 'a', 'little', 'mistaken', '.']]) == [['Any', 'human', 'disclosure', 'has', 'been', 'completed', 'by', 'truth', 'seldom', ',', 'very', 'seldom', ',', 'belong', ';', 'seldom', 'can', 'it', 'happen', 'that', 'something', 'is', 'not', 'a', 'little', 'disguised', 'or', 'a', 'little', 'mistaken', '.']]
 
     def test_original_on(self):
         a2p = Active2PassiveAugmentation(original_too=True)
@@ -213,6 +224,8 @@ class TestActive2PassiveAugmentation(unittest.TestCase):
         def active2passive(text):
             return a2p.doc_augment(text=text)[0]
 
+        assert active2passive("I was waiting for small Dina") == ['Small', 'Dina', 'was', 'being', 'waited', 'by', 'me']
+        assert active2passive("I was waiting for this Diana") == ['This', 'Diana', 'was', 'being', 'waited', 'by', 'me']
         assert active2passive("I was waiting for Dina") == ['Dina', 'was', 'being', 'waited', 'by', 'me']
         assert active2passive("I was waiting for Dina. She is baking a cake.") == ['Dina', 'was', 'being', 'waited',
                                                                                    'by', 'me', '.', 'A', 'cake', 'is',
