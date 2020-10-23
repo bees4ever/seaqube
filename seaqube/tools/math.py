@@ -1,7 +1,9 @@
 import itertools
 import operator
 import string
+import sys
 from functools import reduce  # Required in Python 3
+from typing import Iterable
 
 import numpy as np
 from numpy import array, diff, sign, sort, math
@@ -90,3 +92,25 @@ def layz_pair_creation(a, b, random, max_len = 30):
                 break
             yield zip(elem, random.sample(b, k))
             pos += 1
+
+
+def lazy_sample(population: Iterable, length: int, k: int, random):
+    if length > 1000000:
+        length = 1000000
+
+    if k > length:
+        raise ValueError(f"k is greater then length, {k} > {length}, a sample is not possible. The max length is: 1000000")
+
+
+
+    indecies = sorted(random.sample(range(length), k))
+    print("INDEX", indecies)
+    try:
+        next_index = indecies.pop(0)
+
+        for i, sample in enumerate(population):
+            if i == next_index:
+                yield sample
+                next_index = indecies.pop(0)
+    except IndexError:
+        pass

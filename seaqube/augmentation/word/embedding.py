@@ -14,6 +14,7 @@ from seaqube.augmentation.base import MultiprocessingAugmentation
 from seaqube.augmentation.misc.embedding_model_wrapper import PreTrainedModel
 from seaqube.augmentation.misc.model_loader import load_fasttext_en_pretrained, load_word2vec_en_pretrained
 from seaqube.package_config import log
+from seaqube.tools.math import lazy_sample
 
 
 class EmbeddingAugmentation(MultiprocessingAugmentation):
@@ -87,12 +88,6 @@ class EmbeddingAugmentation(MultiprocessingAugmentation):
         """
         return "doc"
 
-    def lazy_sample(self, population: Iterable, length: int, k: int):
-        indecies = sorted(self.r.sample(range(length), k))
-        for i, sample in enumerate(population):
-            if i in indecies:
-                yield sample
-
     def augmentation_implementation(self, doc: list):
 
         augmented = []
@@ -104,7 +99,7 @@ class EmbeddingAugmentation(MultiprocessingAugmentation):
                 similars.append([None])
 
         combinations = product(range(self.similar_n + 1), repeat=len(doc))
-        combinations_sample = self.lazy_sample(combinations, (self.similar_n + 1)**len(doc), self.max_length)
+        combinations_sample = lazy_sample(combinations, (self.similar_n + 1)**len(doc), self.max_length, self.r)
 
         for tuple_ in combinations_sample:
             tmp_doc = copy.deepcopy(doc)
