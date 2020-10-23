@@ -187,7 +187,7 @@ class AugmentationStreamer:
                 docs = aug_docs
 
                 log.debug(f"{self.__class__.__name__}: DOCs={docs}")
-                log.debug(f"{self.__class__.__name__}: Aug={aug},  len={len(docs)}")
+                log.debug(f"{self.__class__.__name__}: AUG={aug},  len={len(docs)}")
 
             for reduction in self.reduction_chain:
                 docs = reduction(docs)
