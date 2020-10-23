@@ -231,6 +231,8 @@ class TestActive2PassiveAugmentation(unittest.TestCase):
                                                                                    'by', 'me', '.', 'A', 'cake', 'is',
                                                                                    'being', 'baked', 'by', 'her', '.']
         assert active2passive("Simson cares the lion") == ['The', 'lion', 'is', 'cared', 'by', 'Simson']
+        assert active2passive("Simson cares little Simon") == ['Little', 'Simon', 'is', 'cared', 'by', 'Simson']
+
         assert active2passive("They make cars in Detroit") == ['Cars', 'are', 'made', 'by', 'them', 'in', 'Detroit']
         assert active2passive("Mary cleans this room everyday") == ['This', 'room', 'is', 'cleaned', 'by', 'Mary',
                                                                     'everyday']

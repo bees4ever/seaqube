@@ -307,7 +307,8 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
                 backwards_index_selected.append(backwards_index)
                 backwards_index -= 1
 
-            if poses[backwards_index] == 'DET':
+
+            if poses[backwards_index] == 'DET' or poses[noun_pos] == 'PROPN':
                 while poses[backwards_index] == 'DET':
                     backwards_index_selected.append(backwards_index)
                     backwards_index -= 1
