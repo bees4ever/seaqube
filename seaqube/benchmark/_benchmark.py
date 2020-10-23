@@ -21,7 +21,7 @@ class BenchmarkScore:
         self.payload = payload
 
     def to_dict(self):
-            return {'score': self.score, 'payload': str(self.payload)}
+            return {'score': self.score, 'payload': self.payload}
 
     def __str__(self):
         return f"(score={self.score}, payload={str(self.payload)})"

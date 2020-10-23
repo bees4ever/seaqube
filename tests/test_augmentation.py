@@ -101,7 +101,16 @@ class TestEDAAugmentation(unittest.TestCase):
 class TestEmbeddingAugmentation(unittest.TestCase):
     def test_embedding_augmentation(self):
         embeding = EmbeddingAugmentation(seed=42, max_length=10)
-        result = [['the', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog'], ['the', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'cat'], ['the', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dogs'], ['the', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'horse'], ['the', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'dude', 'dog'], ['the', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'dude', 'cat'], ['the', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'dude', 'dogs'], ['the', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'dude', 'horse'], ['the', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'boring', 'dog'], ['the', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'boring', 'cat']]
+        result = [['the', 'quick', 'green', 'fox', 'spins', 'over', 'in', 'boring', 'dog'],
+ ['the', 'easy', 'brown', 'fox', 'jump', 'over', 'which', 'dude', 'horse'],
+ ['the', 'slow', 'green', 'fox', 'jumping', 'over', 'the', 'stupid', 'dog'],
+ ['the', 'give', 'white', 'fox', 'jump', 'past', 'part', 'boring', 'dog'],
+ ['the', 'give', 'gray', 'abc', 'jumps', 'over', 'the', 'lazy', 'cat'],
+ ['which', 'quick', 'white', 'cbs', 'jump', 'past', 'the', 'dude', 'dogs'],
+ ['which', 'give', 'brown', 'nbc', 'jump', 'over', 'part', 'lazy', 'dogs'],
+ ['which', 'give', 'green', 'abc', 'jump', 'up', 'the', 'boring', 'cat'],
+ ['part', 'quick', 'green', 'fox', 'spins', 'while', 'the', 'lazy', 'dogs'],
+ ['in', 'easy', 'gray', 'fox', 'jumps', 'over', 'which', 'boring', 'dog']]
         augmented = embeding.doc_augment(text=QUICK_FOX)
         self.assertEqual(augmented, result)
 

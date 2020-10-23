@@ -103,7 +103,7 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
 
     def get_sentene_tense(self, tokens):
         """
-        Detect the tense based on one sentence (no nested senteces allowed)
+        Detect the tense based on one sentence (no nested sentences allowed)
         """
         tags = [d.tag_ for d in tokens]
 

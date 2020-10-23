@@ -8,6 +8,7 @@ import copy
 
 import random
 from itertools import product
+from typing import Iterable
 
 from seaqube.augmentation.base import MultiprocessingAugmentation
 from seaqube.augmentation.misc.embedding_model_wrapper import PreTrainedModel
@@ -60,9 +61,10 @@ class EmbeddingAugmentation(MultiprocessingAugmentation):
         self.remove_duplicates = remove_duplicates
         self.multiprocess = multiprocess
         self.seed = seed
+        self.r = random.Random()
 
         if seed is not None:
-            random.seed(seed)
+            self.r.seed(seed)
 
         self.similar_n = similar_n
 
@@ -85,6 +87,12 @@ class EmbeddingAugmentation(MultiprocessingAugmentation):
         """
         return "doc"
 
+    def lazy_sample(self, population: Iterable, length: int, k: int):
+        indecies = sorted(self.r.sample(range(length), k))
+        for i, sample in enumerate(population):
+            if i in indecies:
+                yield sample
+
     def augmentation_implementation(self, doc: list):
 
         augmented = []
@@ -95,9 +103,10 @@ class EmbeddingAugmentation(MultiprocessingAugmentation):
             except KeyError:
                 similars.append([None])
 
-        for pos, tuple_ in enumerate(product(range(self.similar_n + 1), repeat=len(doc))):
-            if pos >= self.max_length:
-                break
+        combinations = product(range(self.similar_n + 1), repeat=len(doc))
+        combinations_sample = self.lazy_sample(combinations, (self.similar_n + 1)**len(doc), self.max_length)
+
+        for tuple_ in combinations_sample:
             tmp_doc = copy.deepcopy(doc)
             for word_pos, index in enumerate(tuple_):
                 try:
