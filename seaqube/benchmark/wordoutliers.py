@@ -55,7 +55,7 @@ class WordOutliersBenchmark(DataSetBasedWordEmbeddingBenchmark):
         if test_run == 0:
             return BenchmarkScore(0.0)
 
-        return BenchmarkScore(test_succeeded/test_run, {'test_run': test_run})
+        return BenchmarkScore(test_succeeded/test_run, {'test_run': test_run, 'test_succeeded': test_succeeded})
 
 
     def _outlier_detection_test(self, words, outlier, model: SeaQuBeWordEmbeddingsModel) -> bool:
