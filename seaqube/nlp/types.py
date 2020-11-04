@@ -10,6 +10,7 @@ from threading import Thread
 from typing import List
 
 import schedule
+from seaqube.nlp.context2vec.context2vec import Context2Vec
 from seaqube.tools.math import cosine
 
 
@@ -63,6 +64,22 @@ class BackgroundScheduler(Thread):
             self.local_scheduler.run_pending()
 
 
+class SeaQuBeWordEmbeddingsModelC2V(SeaQuBeWordEmbeddingsModel):
+    def __init__(self, c2v: Context2Vec):
+        self.c2v = c2v
+
+    def vocabs(self) -> List[str]:
+        return list(self.c2v.wv.vocab.keys())
+
+    @property
+    def wv(self):
+        return self.c2v.wv
+
+    def word_vector(self, word):
+        return self.c2v.wv[word]
+
+    def matrix(self):
+        return self.c2v.wv.vectors
 
 
 class SeaQuBeWordEmbeddingsModelGensim(SeaQuBeWordEmbeddingsModel):
