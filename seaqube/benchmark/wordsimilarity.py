@@ -57,10 +57,10 @@ class WordSimilarityBenchmark(DataSetBasedWordEmbeddingBenchmark):
                    },
                    'shapiro': {
                        'original_sim': {
-                           'pvalue': shapiro(sheet_sim).pvalue, 'statistic': shapiro(sheet_sim).statistic
+                           'pvalue': shapiro(sheet_sim)[0], 'statistic': shapiro(sheet_sim)[1]
                        },
                        'model_sim': {
-                           'pvalue': shapiro(sheet_sim).pvalue, 'statistic': shapiro(sheet_sim).statistic
+                           'pvalue': shapiro(model_sim)[0], 'statistic': shapiro(model_sim)[1]
                        }
                    },
                    'matched_words': len(model_sim)}
