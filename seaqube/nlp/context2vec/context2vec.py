@@ -35,7 +35,7 @@ class Context2Vec:
         self.reader = None
         self.__training_possible = True
         self.__wv = None
-        self.__trainings_params = dict()
+        self.trainings_params = dict()
 
 
     def __run(self, epoch, optimizer):
@@ -120,13 +120,19 @@ class Context2Vec:
         if grad_clip:
             optimizer.add_hook(GradientClipping(grad_clip))
 
-        self.__trainings_params['deep'] = deep
-        self.__trainings_params['unit'] = unit
-        self.__trainings_params['dropout'] = dropout
-        self.__trainings_params['gpu'] = gpu
+        self.trainings_params['deep'] = deep
+        self.trainings_params['unit'] = unit
+        self.trainings_params['dropout'] = dropout
+        self.trainings_params['trimfreq'] = trimfreq
+        self.trainings_params['ns_power'] = ns_power
+        self.trainings_params['cgfile'] = cgfile
+        self.trainings_params['gpu'] = gpu
+        self.trainings_params['batchsize'] = batchsize
+        self.trainings_params['epoch'] = epoch
+        self.trainings_params['alpha'] = alpha
+        self.trainings_params['grad_clip'] = grad_clip
 
         self.__run(epoch, optimizer)
-
 
     @property
     def wv(self):
@@ -142,7 +148,7 @@ class Context2Vec:
             'index2word': self.reader.index2word,
             'word2index': self.reader.word2index,
             'backend_model': self.backend_model,
-            'backend_model_params': self.__trainings_params,
+            'backend_model_params': self.trainings_params,
             'wv': self.wv
         }
 
