@@ -44,6 +44,11 @@ class WordSimilarityBenchmark(DataSetBasedWordEmbeddingBenchmark):
         s_corr = spearmanr(model_sim, sheet_sim)
         k_corr = kendalltau(model_sim, sheet_sim)
 
+        try:
+            shap_value = shapiro(sheet_sim)
+        except ValueError:
+            shap_value = [0, 0]
+
         payload = {'pearson':
                    {
                        'correlation': p_corr[0], 'pvalue': p_corr[1]
@@ -57,10 +62,10 @@ class WordSimilarityBenchmark(DataSetBasedWordEmbeddingBenchmark):
                    },
                    'shapiro': {
                        'original_sim': {
-                           'pvalue': shapiro(sheet_sim)[0], 'statistic': shapiro(sheet_sim)[1]
+                           'pvalue': shap_value[0], 'statistic': shap_value[1]
                        },
                        'model_sim': {
-                           'pvalue': shapiro(model_sim)[0], 'statistic': shapiro(model_sim)[1]
+                           'pvalue': shap_value[0], 'statistic': shap_value[1]
                        }
                    },
                    'matched_words': len(model_sim)}
