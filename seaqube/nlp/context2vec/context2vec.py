@@ -174,5 +174,6 @@ class Context2Vec:
         c2v.backend_model = context2vec_bundle['backend_model']
 
         c2v.target_word_units = context2vec_bundle['word_units']
+        c2v.trainings_params = context2vec_bundle['backend_model_params']
 
         return c2v
