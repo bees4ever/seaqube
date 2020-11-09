@@ -69,7 +69,7 @@ class SeaQuBeWordEmbeddingsModelC2V(SeaQuBeWordEmbeddingsModel):
         self.c2v = c2v
 
     def vocabs(self) -> List[str]:
-        return list(self.c2v.wv.vocabs.keys())
+        return self.c2v.wv.vocabs
 
     @property
     def wv(self):
