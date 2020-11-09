@@ -131,17 +131,7 @@ class Context2Vec:
         if self.grad_clip:
             optimizer.add_hook(GradientClipping(self.grad_clip))
 
-        self.trainings_params['deep'] = self.deep
-        self.trainings_params['unit'] = self.unit
-        self.trainings_params['dropout'] = self.dropout
-        self.trainings_params['trimfreq'] = self.trimfreq
-        self.trainings_params['ns_power'] = self.ns_power
-        self.trainings_params['cgfile'] = self.cgfile
-        self.trainings_params['gpu'] = self.gpu
-        self.trainings_params['batchsize'] = self.batchsize
-        self.trainings_params['epoch'] = self.epoch
-        self.trainings_params['alpha'] = self.alpha
-        self.trainings_params['grad_clip'] = self.grad_clip
+
 
         self.__run(self.epoch, optimizer)
 
@@ -153,13 +143,27 @@ class Context2Vec:
             return self.__wv
 
     def __get_bundle(self):
+
+        trainings_params = {}
+        trainings_params['deep'] = self.deep
+        trainings_params['unit'] = self.unit
+        trainings_params['dropout'] = self.dropout
+        trainings_params['trimfreq'] = self.trimfreq
+        trainings_params['ns_power'] = self.ns_power
+        trainings_params['cgfile'] = self.cgfile
+        trainings_params['gpu'] = self.gpu
+        trainings_params['batchsize'] = self.batchsize
+        trainings_params['epoch'] = self.epoch
+        trainings_params['alpha'] = self.alpha
+        trainings_params['grad_clip'] = self.grad_clip
+
         return {
             'matrix': self.backend_model.loss_func.W.data,
             'word_units': self.target_word_units,
             'index2word': self.reader.index2word,
             'word2index': self.reader.word2index,
             'backend_model': self.backend_model,
-            'backend_model_params': self.trainings_params,
+            'backend_model_params': trainings_params,
             'wv': self.wv
         }
 
@@ -185,6 +189,21 @@ class Context2Vec:
         c2v.backend_model = context2vec_bundle['backend_model']
 
         c2v.target_word_units = context2vec_bundle['word_units']
-        c2v.trainings_params = context2vec_bundle['backend_model_params']
+
+        trainings_params = context2vec_bundle['backend_model_params']
+
+
+        c2v.deep = trainings_params['deep']
+        c2v.unit = trainings_params['unit']
+        c2v.dropout = trainings_params['dropout']
+        c2v.trimfreq = trainings_params['trimfreq']
+        c2v.ns_power = trainings_params['ns_power']
+        c2v.cgfile = trainings_params['cgfile']
+        c2v.gpu = trainings_params['gpu']
+        c2v.batchsize = trainings_params['batchsize']
+        c2v.epoch = trainings_params['epoch']
+        c2v.alpha = trainings_params['alpha']
+        c2v.grad_clip = trainings_params['grad_clip']
+
 
         return c2v
