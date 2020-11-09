@@ -29,13 +29,24 @@ class C2VWV:
 
 
 class Context2Vec:
-    def __init__(self):
+    def __init__(self, trimfreq=0, ns_power=0.75, dropout=0.0, cgfile=None, gpu=-1, unit=300, batchsize=100, epoch=10, deep=True, alpha=0.001, grad_clip=None):
         self.backend_model = None
         self.target_word_units = None
         self.reader = None
         self.__training_possible = True
         self.__wv = None
-        self.trainings_params = dict()
+
+        self.trimfreq = trimfreq
+        self.ns_power = ns_power
+        self.dropout = dropout
+        self.cgfile = cgfile
+        self.gpu = gpu
+        self.unit = unit
+        self.batchsize = batchsize
+        self.epoch = epoch
+        self.deep = deep
+        self.alpha = alpha
+        self.grad_clip = grad_clip
 
 
     def __run(self, epoch, optimizer):
@@ -77,62 +88,62 @@ class Context2Vec:
 
             print('accum words per epoch', word_count, 'accum_loss', accum_loss, 'accum_loss/word', accum_mean_loss)
 
-    def train(self, sentences, trimfreq=0, ns_power=0.75, dropout=0.0, cgfile=None, gpu=-1, unit=300, batchsize=100, epoch=10, deep=True, alpha=0.001, grad_clip=None):
+    def train(self, corpus):
         if not self.__training_possible:
             raise ValueError("This model was loaded, a training afterwards is not supported, yet")
 
-        print('GPU: {}'.format(gpu))
-        print('# unit: {}'.format(unit))
-        print('Minibatch-size: {}'.format(batchsize))
-        print('# epoch: {}'.format(epoch))
-        print('Deep: {}'.format(deep))
-        print('Dropout: {}'.format(dropout))
-        print('Trimfreq: {}'.format(trimfreq))
-        print('NS Power: {}'.format(ns_power))
-        print('Alpha: {}'.format(alpha))
-        print('Grad clip: {}'.format(grad_clip))
+        print('GPU: {}'.format(self.gpu))
+        print('# unit: {}'.format(self.unit))
+        print('Minibatch-size: {}'.format(self.batchsize))
+        print('# epoch: {}'.format(self.epoch))
+        print('Deep: {}'.format(self.deep))
+        print('Dropout: {}'.format(self.dropout))
+        print('Trimfreq: {}'.format(self.trimfreq))
+        print('NS Power: {}'.format(self.ns_power))
+        print('Alpha: {}'.format(self.alpha))
+        print('Grad clip: {}'.format(self.grad_clip))
         print('')
 
-        context_word_units = unit
-        lstm_hidden_units = IN_TO_OUT_UNITS_RATIO * unit
-        self.target_word_units = IN_TO_OUT_UNITS_RATIO * unit
+        context_word_units = self.unit
+        lstm_hidden_units = IN_TO_OUT_UNITS_RATIO * self.unit
+        self.target_word_units = IN_TO_OUT_UNITS_RATIO * self.unit
 
-        if gpu >= 0:
+        if self.gpu >= 0:
             cuda.check_cuda_available()
-            cuda.get_device(gpu).use()
-        xp = cuda.cupy if gpu >= 0 else np
+            cuda.get_device(self.gpu).use()
+        xp = cuda.cupy if self.gpu >= 0 else np
 
-        prepared_corpus = read_in_corpus(sentences)
+        prepared_corpus = read_in_corpus(corpus)
 
-        self.reader = SentenceReaderDict(prepared_corpus, trimfreq, batchsize)
+        self.reader = SentenceReaderDict(prepared_corpus, self.trimfreq, self.batchsize)
         print('n_vocab: %d' % (len(self.reader.word2index) - 3))  # excluding the three special tokens
         print('corpus size: %d' % (self.reader.total_words))
 
         cs = [self.reader.trimmed_word2count[w] for w in range(len(self.reader.trimmed_word2count))]
-        loss_func = L.NegativeSampling(self.target_word_units, cs, NEGATIVE_SAMPLING_NUM, ns_power)
+        loss_func = L.NegativeSampling(self.target_word_units, cs, NEGATIVE_SAMPLING_NUM, self.ns_power)
 
         #args = parse_arguments()
-        self.backend_model = BiLstmContext(deep, gpu, self.reader.word2index, context_word_units, lstm_hidden_units, self.target_word_units, loss_func, True, dropout)
+        self.backend_model = BiLstmContext(self.deep, self.gpu, self.reader.word2index, context_word_units, lstm_hidden_units, self.target_word_units, loss_func, True, self.dropout)
 
-        optimizer = O.Adam(alpha=alpha)
+        optimizer = O.Adam(alpha=self.alpha)
         optimizer.setup(self.backend_model)
 
-        if grad_clip:
-            optimizer.add_hook(GradientClipping(grad_clip))
+        if self.grad_clip:
+            optimizer.add_hook(GradientClipping(self.grad_clip))
 
-        self.trainings_params['deep'] = deep
-        self.trainings_params['unit'] = unit
-        self.trainings_params['dropout'] = dropout
-        self.trainings_params['trimfreq'] = trimfreq
-        self.trainings_params['ns_power'] = ns_power
-        self.trainings_params['cgfile'] = cgfile
-        self.trainings_params['gpu'] = gpu
-        self.trainings_params['batchsize'] = batchsize
-        self.trainings_params['epoch'] = epoch
-        self.trainings_params['alpha'] = alpha
-        self.trainings_params['grad_clip'] = grad_clip
+        self.trainings_params['deep'] = self.deep
+        self.trainings_params['unit'] = self.unit
+        self.trainings_params['dropout'] = self.dropout
+        self.trainings_params['trimfreq'] = self.trimfreq
+        self.trainings_params['ns_power'] = self.ns_power
+        self.trainings_params['cgfile'] = self.cgfile
+        self.trainings_params['gpu'] = self.gpu
+        self.trainings_params['batchsize'] = self.batchsize
+        self.trainings_params['epoch'] = self.epoch
+        self.trainings_params['alpha'] = self.alpha
+        self.trainings_params['grad_clip'] = self.grad_clip
 
-        self.__run(epoch, optimizer)
+        self.__run(self.epoch, optimizer)
 
     @property
     def wv(self):
