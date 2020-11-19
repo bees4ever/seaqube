@@ -20,7 +20,7 @@ def load_fasttext_en_pretrained():
         raise ValueError("Fast Text Pretrained Model is not available, please run: `from seaqube import download;download('fasttext-en-pretrained')`")
 
     with open(path, 'rb') as fin:
-        return PreTrainedGensimEN(load(fin))
+        return load(fin)
 
 
 def load_word2vec_en_pretrained():
