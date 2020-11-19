@@ -102,7 +102,8 @@ class SeaQuBeWordEmbeddingsModelGensim(SeaQuBeWordEmbeddingsModel):
 
 class SeaQuBeWordEmbeddingsModelRawFT(SeaQuBeWordEmbeddingsModel):
     def __init__(self, raw_ft):
-        self.__wv = SeaQuBeNLPModel2WV(list(raw_ft[13]), raw_ft[15])
+        vocs = list(raw_ft[13])
+        self.__wv = SeaQuBeNLPModel2WV(vocs, raw_ft[15][0: len(vocs)])
 
     def vocabs(self) -> List[str]:
         return self.__wv.vocabs
