@@ -9,6 +9,7 @@ import itertools
 from pandas import read_csv
 import numpy as np
 from progressbar import progressbar, ProgressBar
+from sklearn.metrics import pairwise_distances
 
 from seaqube.benchmark._benchmark import DataSetBasedWordEmbeddingBenchmark, get_shipped_test_set_path, \
     get_list_of_shipped_test_sets, BenchmarkScore
@@ -46,7 +47,48 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
 
         return list(zip(np.array(model.vocabs())[found_indecies], distances[found_indecies]))
 
-    def _3_cos_add(self, a, b, c, model: SeaQuBeWordEmbeddingsModel):
+    def _nearest_neighbors(self, a, b, c, model: SeaQuBeWordEmbeddingsModel, exclude=[]):
+
+        """
+        See https://github.com/kudkudak/word-embeddings-benchmarks/blob/master/web/embedding.py
+        Find nearest neighbor of given word
+        Parameters
+        ----------
+          word: string or vector
+            Query word or vector.
+          k: int, default: 1
+            Number of nearest neighbours to return.
+          metric: string, default: 'cosine'
+            Metric to use.
+          exclude: list, default: []
+            Words to omit in answer
+        Returns
+        -------
+          n: list
+            Nearest neighbors.
+        """
+        k = 10
+        # exclude = []
+        metric = "cosine"
+
+        word2index = {word: i for i, word in enumerate(model.wv.vocabs)}
+        index2word = {i: word for i, word in enumerate(model.wv.vocabs)}
+
+        # if isinstance(word, str):
+        #     assert word in vocabs, "Word not found in the vocabulary"
+        #     v = w2v.wv[word]
+        # else:  # otherwise it is a vector
+        #     v = word
+        v = a + b - c
+
+        D = pairwise_distances(model.wv.matrix, v.reshape(1, -1), metric=metric)
+
+        for w in exclude:
+            D[word2index[w]] = D.max()
+
+        return [index2word[id] for id in D.argsort(axis=0).flatten()[0:k]]
+
+    def _3_cos_add(self, a, b, c, model: SeaQuBeWordEmbeddingsModel, exclude=[]):
         vocab_len = model.matrix().shape[0]
         res = []
         for i in range(vocab_len):
@@ -54,20 +96,20 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
             res.append(cosine(d, c) - cosine(d, a) + cosine(d, b))
 
         sorted_zip = list(zip(
-                    np.array(model.vocabs())[np.argsort(res)[::-1]], # [::-1] is for maximizing
-                    np.sort(res)[::-1]
-                ))
+            np.array(model.vocabs())[np.argsort(res)[::-1]],  # [::-1] is for maximizing
+            np.sort(res)[::-1]
+        ))
 
         sorted_top = sorted_zip[0:10]
         del sorted_zip
         gc.collect()
         return sorted_top
 
-    def _vector_calc(self, a, b, c, model: SeaQuBeWordEmbeddingsModel):
+    def _vector_calc(self, a, b, c, model: SeaQuBeWordEmbeddingsModel, exclude=[]):
         calculated_wv = a - b + c
         return self.most_similar(calculated_wv, model)
 
-    def _pair_dir(self, a, b, c, model: SeaQuBeWordEmbeddingsModel):
+    def _pair_dir(self, a, b, c, model: SeaQuBeWordEmbeddingsModel, exclude=[]):
         vocab_len = model.matrix().shape[0]
         res = []
         for i in range(vocab_len):
@@ -79,7 +121,7 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
             np.sort(res)[::-1]
         ))[0:10]
 
-    def _space_evolution(self, a, b, c, model: SeaQuBeWordEmbeddingsModel):
+    def _space_evolution(self, a, b, c, model: SeaQuBeWordEmbeddingsModel, exclude=[]):
         a_h = a / np.linalg.norm(a)
         b_h = b / np.linalg.norm(b)
         c_h = c / np.linalg.norm(c)
@@ -90,7 +132,9 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
         log.info(f"WordAnalogy of these relation:{row.word1}:{row.word2}::{row.word3}:?")
 
         log.info(f"WordAnalogy: target={row.target}")
-        detected_targets = self.measure_method(self.model.wv[row.word1], self.model.wv[row.word2], self.model.wv[row.word3], self.model)
+        detected_targets = self.measure_method(self.model.wv[row.word1], self.model.wv[row.word2],
+                                               self.model.wv[row.word3], self.model,
+                                               exclude=[row.word1, row.word2, row.word3])
 
         log.info(f"WordAnalogy: detected_targets={detected_targets}")
 
@@ -98,7 +142,6 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
 
         del detected_targets
         return int(word == row.target)
-        
 
     def __call__(self, model: SeaQuBeWordEmbeddingsModel) -> BenchmarkScore:
         correct_hits = 0
@@ -111,8 +154,11 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
             self.measure_method = self._pair_dir
         elif self.method == 'SpaceEvolution':
             self.measure_method = self._space_evolution
+        elif self.method == "NearestNeighbors":
+            self.measure_method = self._nearest_neighbors
         else:
-            raise ValueError(f"Argument `method` must be in one of [3CosAdd, VectorCalc, PairDir, SpaceEvolution]")
+            raise ValueError(
+                f"Argument `method` must be in one of [3CosAdd, VectorCalc, PairDir, SpaceEvolution, NearestNeighbors]")
 
         self.model = model
 
@@ -124,8 +170,6 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
 
             if row.word1 in self.model.vocabs() and row.word2 in self.model.vocabs() and row.word3 in self.model.vocabs() and row.target in self.model.vocabs():
                 filtered_rows.append(row)
-
-
 
         # then use filtered row for hard work
         prg = ProgressBar(max_value=len(filtered_rows))
@@ -141,8 +185,8 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
             prg.update(prg.value + 1)
 
         considered_lines = len(filtered_rows)
-        
+
         if considered_lines == 0:
             return BenchmarkScore(0.0)
-            
+
         return BenchmarkScore(correct_hits / considered_lines, {'matched_words': considered_lines})

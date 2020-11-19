@@ -3,7 +3,7 @@ Copyright (c) 2020 by Benjamin Manns
 This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
 :author: Benjamin Manns
 '''
-
+import time
 from os.path import join, basename, dirname
 import unittest
 
@@ -103,6 +103,18 @@ class TestWordAnalogyBenchmark(unittest.TestCase):
         print("res = ", res)
         self.assertAlmostEqual(res.score, 0.0, delta=0.01)
 
+    def test_nearest_neighbors(self):
+        nlp = SeaQuBeCompressLoader.load_compressed_model(model_path(), 'test_model')
+
+        test_set = 'google-analogies'
+        mm = "NearestNeighbors"
+        start = time.time()
+        simi_bench = WordAnalogyBenchmark(test_set, method=mm, multiprocessing=False)
+        res = simi_bench(nlp.model)
+        end = time.time()
+        print(test_set, "result = ", res, "time = ", end-start)
+        self.assertAlmostEqual(res.score, 0.0, delta=0.01)
+
     def test_simple_benchmark(self):
         # need to load a simple model, i.e. small dataset
         #model = SmallModel()
@@ -111,11 +123,13 @@ class TestWordAnalogyBenchmark(unittest.TestCase):
         nlp = SeaQuBeCompressLoader.load_compressed_model(model_path(), 'test_model')
 
         for test_set in ['semeval', 'google-analogies', 'sat', 'msr', 'jair']:
-            for mm in ['3CosAdd', 'VectorCalc', 'PairDir', 'SpaceEvolution']:
+            for mm in ['3CosAdd', 'VectorCalc', 'PairDir', 'SpaceEvolution', 'NearestNeighbors']:
+                start = time.time()
                 simi_bench = WordAnalogyBenchmark(test_set, method=mm, multiprocessing=True)
                 res = simi_bench(nlp.model)
-                print(test_set, "result = ", res)
-            self.assertAlmostEqual(res.score, 0.0, delta=0.01)
+                end = time.time()
+                print(test_set, "result = ", res, "time=", end-start)
+                self.assertAlmostEqual(res.score, 0.0, delta=0.01)
 
 
 class TestWordOutlierBenchmark(unittest.TestCase):
