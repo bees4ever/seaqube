@@ -71,9 +71,6 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
         # exclude = []
         metric = "cosine"
 
-        word2index = {word: i for i, word in enumerate(model.vocabs())}
-        index2word = {i: word for i, word in enumerate(model.vocabs())}
-
         # if isinstance(word, str):
         #     assert word in vocabs, "Word not found in the vocabulary"
         #     v = w2v.wv[word]
@@ -84,9 +81,9 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
         D = pairwise_distances(model.matrix(), v.reshape(1, -1), metric=metric)
 
         for w in exclude:
-            D[word2index[w]] = D.max()
+            D[self.word2index[w]] = D.max()
 
-        return [index2word[id] for id in D.argsort(axis=0).flatten()[0:k]]
+        return [self.index2word[id] for id in D.argsort(axis=0).flatten()[0:k]]
 
     def _3_cos_add(self, a, b, c, model: SeaQuBeWordEmbeddingsModel, exclude=[]):
         vocab_len = model.matrix().shape[0]
@@ -155,6 +152,8 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
         elif self.method == 'SpaceEvolution':
             self.measure_method = self._space_evolution
         elif self.method == "NearestNeighbors":
+            self.word2index = {word: i for i, word in enumerate(model.vocabs())}
+            self.index2word = {i: word for i, word in enumerate(model.vocabs())}
             self.measure_method = self._nearest_neighbors
         else:
             raise ValueError(
