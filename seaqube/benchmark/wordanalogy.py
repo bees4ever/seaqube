@@ -71,8 +71,8 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
         # exclude = []
         metric = "cosine"
 
-        word2index = {word: i for i, word in enumerate(model.wv.vocabs)}
-        index2word = {i: word for i, word in enumerate(model.wv.vocabs)}
+        word2index = {word: i for i, word in enumerate(model.vocabs())}
+        index2word = {i: word for i, word in enumerate(model.vocabs())}
 
         # if isinstance(word, str):
         #     assert word in vocabs, "Word not found in the vocabulary"
@@ -81,7 +81,7 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
         #     v = word
         v = a + b - c
 
-        D = pairwise_distances(model.wv.matrix, v.reshape(1, -1), metric=metric)
+        D = pairwise_distances(model.matrix(), v.reshape(1, -1), metric=metric)
 
         for w in exclude:
             D[word2index[w]] = D.max()
