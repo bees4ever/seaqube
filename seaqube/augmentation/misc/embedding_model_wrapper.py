@@ -17,6 +17,17 @@ class PreTrainedModel(ABC):
     def wv(self):
         pass
 
+class PreTrainedFTRawEN(PreTrainedModel):
+    def __init__(self, loaded_model):
+        self.loaded_model = loaded_model
+
+    def similar_by_word(self, word, topn=10):
+        return self.loaded_model.similar_by_word(word, topn)
+
+    @property
+    def wv(self):
+        return self.loaded_model.wv
+
 
 class PreTrainedGensimEN(PreTrainedModel):
     def __init__(self, loaded_model):
