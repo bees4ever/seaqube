@@ -188,4 +188,5 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
         if considered_lines == 0:
             return BenchmarkScore(0.0)
 
-        return BenchmarkScore(correct_hits / considered_lines, {'matched_words': considered_lines})
+        return BenchmarkScore(correct_hits / considered_lines, {'matched_words': considered_lines,
+                                                                'correct_hits': correct_hits})
