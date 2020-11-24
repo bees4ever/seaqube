@@ -323,7 +323,8 @@ class Active2PassiveAugmentation(SingleprocessingAugmentation):
                 backwards_index_selected.reverse()
 
                 before_noun = [doc[j] for j in backwards_index_selected]
-                before_noun[0] = det
+                if len(before_noun) > 0:
+                    before_noun[0] = det
 
                 log.debug(f"[sentence2passive] found articles with appendix={str(before_noun)}")
 

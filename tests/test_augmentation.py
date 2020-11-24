@@ -212,6 +212,8 @@ class TestActive2PassiveAugmentation(unittest.TestCase):
         def active2passive(text):
             return a2p.doc_augment(text=text)[0]
 
+        assert active2passive("6.3-magnitude earthquake hits Taiwan.") == ['Taiwan', 'is', 'hit', 'by', 'earthquake', '6.3-magnitude', '.']
+
         assert active2passive("I was waiting for small Dina") == ['Small', 'Dina', 'was', 'being', 'waited', 'by', 'me']
         assert active2passive("I was waiting for this Diana") == ['This', 'Diana', 'was', 'being', 'waited', 'by', 'me']
         assert active2passive("I was waiting for Dina") == ['Dina', 'was', 'being', 'waited', 'by', 'me']
