@@ -21,11 +21,12 @@ except ImportError:
 
 
 from vec4ir import WordCentroidDistance, Matching, Retrieval
-from numpy import array
+from numpy import array, mean
+
 
 
 class Corpus4IRBenchmark(BaseWordEmbeddingBenchmark):
-    def __init__(self, small_corpus, model="w2v"):
+    def __init__(self, small_corpus, model="w2v", threshold=0.9):
         if model not in ["ft", "w2v"]:
             raise ValueError("model can only be one of 'ft' or 'w2v'")
 
@@ -34,6 +35,7 @@ class Corpus4IRBenchmark(BaseWordEmbeddingBenchmark):
         elif model == "w2v":
             self.model: PreTrainedModel = load_word2vec_en_pretrained()
 
+        self.threshold = threshold
         self.corpus = sentenceize_corpus(small_corpus)
         self.retrieval = self.setup_ir(self.model.wv, self.corpus)
 
@@ -49,35 +51,25 @@ class Corpus4IRBenchmark(BaseWordEmbeddingBenchmark):
         retrieval.fit(corpus)
         return retrieval
 
-    @staticmethod
-    def perform_ir(retrieval, query):
-        result = array(retrieval.query(query, return_scores=True))
-        return result[0][result[1] > 0.75]  # 0.75 is a constant
-
     def __call__(self, model: SeaQuBeWordEmbeddingsModel) -> BenchmarkScore:
-        custom_model_retrival = self.setup_ir(model.wv, self.corpus)
-        tp, fn, fp = 0, 0, 0
+        custom_retrieval_model = self.setup_ir(model.wv, self.corpus)
 
-        for sentence in progressbar(self.corpus):
+        x = []
+        y = {}
+        for i in progressbar(range(len(self.corpus))):
+            x.append((i, self.corpus[i]))
 
-            relevant_documents = set(self.perform_ir(self.retrieval, sentence))
-            search_result_documents = set(self.perform_ir(custom_model_retrival, sentence))
+            result = self.retrieval.query(self.corpus[i], return_scores=True) # # original retrieval
+            result_evaluate_x = list(zip(list(result[0]), list(result[1])))
 
-            tp += len(relevant_documents.intersection(search_result_documents))
-            fn += len(relevant_documents) - len(relevant_documents.intersection(search_result_documents))
-            fp += len(search_result_documents.difference(relevant_documents))
-            log.debug(f"{self.__class__.__name__}: tp, fn, fp:{tp}, {fn}, {fp}")
-            
-            if (tp + fp) == 0:
-                precision = 0.0
-            else:
-                precision = tp / (tp + fp)
-            if (tp + fn) == 0:
-                recall = 0
-            else:
-                recall = tp / (tp + fn)
+            y[i] = {doc: score for (doc, score) in result_evaluate_x if score >= self.threshold}
 
-        return BenchmarkScore(f_score(precision, recall, 1), dict(tp=tp, fn=fn, fp=fp))
+        scores = custom_retrieval_model.evaluate(x, y)
+
+        mean_scores = {k: mean(v) for k, v in scores.items()}
+
+        return BenchmarkScore(mean_scores['f1_score'], dict(recall=mean_scores['recall'], precision=mean_scores['precision']))
+
 
     def get_config(self):
         return dict(class_name=str(self), model=self.model.__class__.__name__,)

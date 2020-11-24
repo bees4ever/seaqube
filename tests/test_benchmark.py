@@ -153,7 +153,7 @@ class TestCorpus4IRBenchmark(unittest.TestCase):
         bench_corpus = Corpus4IRBenchmark(load_corpus())
         res = bench_corpus(nlp.model)
 
-        self.assertAlmostEqual(res.score, 0.6666666, delta=0.01)
+        self.assertAlmostEqual(res.score, 0.295066, delta=0.01)
 
 
 if __name__ == "__main__":
