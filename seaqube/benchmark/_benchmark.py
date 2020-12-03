@@ -9,7 +9,7 @@ from os.path import join, exists
 from pandas import DataFrame
 from abc import abstractmethod
 import os
-
+from scipy.stats import pearsonr, shapiro, spearmanr, kendalltau
 from seaqube.nlp.types import SeaQuBeWordEmbeddingsModel
 from seaqube.package_config import package_path, log
 from seaqube.tools.types import Configable
@@ -93,4 +93,40 @@ def get_list_of_shipped_test_sets(category):
     return list(map(lambda x: x.replace(".csv", ""), os.listdir(base_path)))
 
 
+def complete_correlation_calculation(model_sim, sheet_sim):
+    p_corr = pearsonr(model_sim, sheet_sim)
+    s_corr = spearmanr(model_sim, sheet_sim)
+    k_corr = kendalltau(model_sim, sheet_sim)
 
+    try:
+        shap_value_sheet = shapiro(sheet_sim)
+    except ValueError:
+        shap_value_sheet = [0, 0]
+
+    try:
+        shap_value_model = shapiro(model_sim)
+    except ValueError:
+        shap_value_model = [0, 0]
+
+    payload = {'pearson':
+        {
+            'correlation': p_corr[0], 'pvalue': p_corr[1]
+        },
+        'spearman':
+            {
+                'correlation': s_corr.correlation, 'pvalue': s_corr.pvalue
+            },
+        'kendalltau': {
+            'correlation': k_corr.correlation, 'pvalue': k_corr.pvalue
+        },
+        'shapiro': {
+            'original_sim': {
+                'pvalue': shap_value_sheet[0], 'statistic': shap_value_sheet[1]
+            },
+            'model_sim': {
+                'pvalue': shap_value_model[0], 'statistic': shap_value_model[1]
+            }
+        },
+        'matched_words': len(model_sim)}
+
+    return BenchmarkScore(p_corr[0], payload)

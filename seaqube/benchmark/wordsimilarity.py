@@ -6,9 +6,8 @@ This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in 
 
 from pandas import read_csv
 from progressbar import progressbar
-from scipy.stats import pearsonr, shapiro, spearmanr, kendalltau
 from seaqube.benchmark._benchmark import DataSetBasedWordEmbeddingBenchmark, get_shipped_test_set_path, \
-    get_list_of_shipped_test_sets, BenchmarkScore
+    get_list_of_shipped_test_sets, BenchmarkScore, complete_correlation_calculation
 from seaqube.nlp.types import SeaQuBeWordEmbeddingsModel
 from seaqube.package_config import log
 
@@ -40,40 +39,4 @@ class WordSimilarityBenchmark(DataSetBasedWordEmbeddingBenchmark):
         if len(model_sim) < 2:
             return BenchmarkScore(0.0)
 
-        p_corr = pearsonr(model_sim, sheet_sim)
-        s_corr = spearmanr(model_sim, sheet_sim)
-        k_corr = kendalltau(model_sim, sheet_sim)
-
-        try:
-            shap_value_sheet = shapiro(sheet_sim)
-        except ValueError:
-            shap_value_sheet = [0, 0]
-
-        try:
-            shap_value_model = shapiro(model_sim)
-        except ValueError:
-            shap_value_model = [0, 0]
-
-
-        payload = {'pearson':
-                   {
-                       'correlation': p_corr[0], 'pvalue': p_corr[1]
-                   },
-                   'spearman':
-                   {
-                       'correlation': s_corr.correlation, 'pvalue': s_corr.pvalue
-                   },
-                       'kendalltau': {
-                           'correlation': k_corr.correlation, 'pvalue': k_corr.pvalue
-                   },
-                   'shapiro': {
-                       'original_sim': {
-                           'pvalue': shap_value_sheet[0], 'statistic': shap_value_sheet[1]
-                       },
-                       'model_sim': {
-                           'pvalue': shap_value_model[0], 'statistic': shap_value_model[1]
-                       }
-                   },
-                   'matched_words': len(model_sim)}
-
-        return BenchmarkScore(p_corr[0], payload)
+        return complete_correlation_calculation(model_sim, sheet_sim)

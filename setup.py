@@ -16,7 +16,7 @@ requirements = ['dill',
                 'pathos==0.2.6',
                 'progressbar2',
                 'pyinflect==0.5.1',
-                'pytest==6.0.2',
+                #'pytest==6.0.2',
                 'schedule',
                 'scikit-learn',
                 'scipy',
@@ -32,7 +32,7 @@ setuptools.setup(
     # Distribution name the package. Name must be unique so adding your username at the end is common.
     name="seaqube",
     # Version number of your package. Semantic versioning is commonly used.
-    version="0.0.11-beta",
+    version="0.0.14-beta",
     # Author name.
     author="Benjamin Manns",
     # Author's email address.
@@ -53,10 +53,10 @@ setuptools.setup(
     install_requires=requirements,
     # Gives pip some metadata about the package. Also displays on the PyPi page.
     classifiers=[
-        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.0",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
     # The version of Python that is required.
-    python_requires='>=3.7',
+    python_requires='>=3',
 )

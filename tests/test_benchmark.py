@@ -8,6 +8,7 @@ from os.path import join, basename, dirname
 import unittest
 
 from seaqube.benchmark.corpus4ir import Corpus4IRBenchmark
+from seaqube.benchmark.semantic_wordnet import SemanticWordnetBenchmark
 from seaqube.benchmark.wordanalogy import WordAnalogyBenchmark
 from seaqube.benchmark.wordoutliers import WordOutliersBenchmark
 from seaqube.benchmark.wordsimilarity import WordSimilarityBenchmark
@@ -141,6 +142,22 @@ class TestWordOutlierBenchmark(unittest.TestCase):
             res = simi_bench(nlp.model)
             print(test_set, "result = ", res)
             self.assertAlmostEqual(res.score, 0.0, delta=0.01)
+
+
+class TestSemanticWordnet(unittest.TestCase):
+    def test_with_wordnet(self):
+        nlp = SeaQuBeCompressLoader.load_compressed_model(model_path(), 'test_model')
+        vocabs = nlp.vocab()
+        word_pairs, length = SemanticWordnetBenchmark.word_pairs_from_vocab_list(vocabs)
+        print("Pairs Length:", length)
+
+        self.assertEqual(length, 1378)  # this is predictable, except model/corpus changes
+
+        swb = SemanticWordnetBenchmark(word_pairs, True, 2)
+        self.assertEqual(length, 1378)
+        results = swb(model=nlp.model).to_dict()
+        self.assertEqual(type(results), dict)
+        self.assertAlmostEquals(results["score"], 0.182, delta=0.2)  # this is not predictable, ...
 
 
 class TestCorpus4IRBenchmark(unittest.TestCase):
