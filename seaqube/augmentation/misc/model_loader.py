@@ -8,7 +8,7 @@ import os.path as Path
 from gensim.models._fasttext_bin import load
 import gensim.downloader as api
 
-from seaqube.augmentation.misc.embedding_model_wrapper import PreTrainedGensimEN
+from seaqube.augmentation.misc.embedding_model_wrapper import PreTrainedGensimEN, PreTrainedFTRawEN
 from seaqube.package_config import package_path, log
 
 
@@ -20,7 +20,7 @@ def load_fasttext_en_pretrained():
         raise ValueError("Fast Text Pretrained Model is not available, please run: `from seaqube import download;download('fasttext-en-pretrained')`")
 
     with open(path, 'rb') as fin:
-        return load(fin)
+        return PreTrainedFTRawEN(load(fin))
 
 
 def load_word2vec_en_pretrained():
