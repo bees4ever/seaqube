@@ -19,7 +19,7 @@ class PreTrainedModel(ABC):
     def wv(self):
         pass
 
-class PreTrainedFTRawEN(PreTrainedModel):
+class PreTrainedFTRawEN():
     def __init__(self, raw_model):
         self.raw_model = raw_model
 
