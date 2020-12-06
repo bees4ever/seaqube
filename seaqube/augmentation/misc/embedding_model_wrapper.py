@@ -27,7 +27,8 @@ class PreTrainedFTRawEN():
 
     @property
     def wv(self):
-        return SeaQuBeNLPModel2WV(list(self.raw_model[13].keys()), self.raw_model[15])
+        vocabs = list(self.raw_model[13].keys())
+        return SeaQuBeNLPModel2WV(vocabs, self.raw_model[15][0:len(vocabs)])
 
 class PreTrainedGensimEN(PreTrainedModel):
     def __init__(self, loaded_model):
