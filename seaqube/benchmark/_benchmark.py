@@ -129,4 +129,4 @@ def complete_correlation_calculation(model_sim, sheet_sim):
         },
         'matched_words': len(model_sim)}
 
-    return BenchmarkScore(p_corr[0], payload)
+    return BenchmarkScore(s_corr.correlation, payload)
