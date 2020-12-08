@@ -520,7 +520,7 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
         #     v = w2v.wv[word]
         # else:  # otherwise it is a vector
         #     v = word
-        v = a + b - c
+        v = b - a + c
 
         D = pairwise_distances(model.matrix(), v.reshape(1, -1), metric=metric)
 
@@ -610,11 +610,12 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
             self.measure_method = self._space_evolution
         elif self.method == "NearestNeighbors":
 
-            #self.word2index = {word: i for i, word in enumerate(model.vocabs())}
-            #self.index2word = {i: word for i, word in enumerate(model.vocabs())}
-            self.w = Embedding(CountedVocabulary.from_vocabs(model.vocabs()), model.matrix())
+            self.word2index = {word: i for i, word in enumerate(model.vocabs())}
+            self.index2word = {i: word for i, word in enumerate(model.vocabs())}
+            #self.w = Embedding(CountedVocabulary.from_vocabs(model.vocabs()), model.matrix())
 
-            self.measure_method = self._nearest_neighbors_woembe
+            #self.measure_method = self._nearest_neighbors_woembe
+            self.measure_method = self._nearest_neighbors
         else:
             raise ValueError(
                 f"Argument `method` must be in one of [3CosAdd, VectorCalc, PairDir, SpaceEvolution, NearestNeighbors]")
