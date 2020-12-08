@@ -532,7 +532,7 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
 
     def _nearest_neighbors_woembe(self, a, b, c, model: SeaQuBeWordEmbeddingsModel, exclude=[]):
         # original
-        return self.w.nearest_neighbors(self.w[a] - self.w[b] + self.w[c], exclude=[a, b, c])[0]
+        return self.w.nearest_neighbors(self.w[b] - self.w[a] + self.w[c], exclude=[a, b, c])[0]
         # half adapted
         # return self.w.nearest_neighbors(a - b + c, exclude=exclude)[0]
 
@@ -577,11 +577,13 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
         return self._3_cos_add(a_h, b_h, c_h, model)
 
     def apply_on_testset_line(self, row):
-        log.info(f"WordAnalogy of these relation:{row.word1}:{row.word2}::{row.word3}:?")
-
-        log.info(f"WordAnalogy: target={row.target}")
-
         a, b, c = row.word1.lower(), row.word2.lower(), row.word3.lower()
+        log.info(f"WordAnalogy of these relation:{a}:{b}::{c}:?")
+        target = row.target.lower()
+
+        log.info(f"WordAnalogy: target={target}")
+
+
         detected_targets = self.measure_method(a, b, c, self.model,
                                                 #self.model.wv[row.word1], self.model.wv[row.word2],self.model.wv[row.word3], self.model,
                                                exclude=[a, b, c])
@@ -592,7 +594,7 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
         word = detected_targets[0][0]
 
         del detected_targets
-        return int(word == row.target)
+        return int(word == target)
 
     def __call__(self, model: SeaQuBeWordEmbeddingsModel) -> BenchmarkScore:
         correct_hits = 0
