@@ -532,9 +532,9 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
 
     def _nearest_neighbors_woembe(self, a, b, c, model: SeaQuBeWordEmbeddingsModel, exclude=[]):
         # original
-        return self.w.nearest_neighbors(self.w[b] - self.w[a] + self.w[c], exclude=[a, b, c])[0]
+        #return self.w.nearest_neighbors(self.w[b] - self.w[a] + self.w[c], exclude=[a, b, c])[0]
         # half adapted
-        # return self.w.nearest_neighbors(a - b + c, exclude=exclude)[0]
+        return self.w.nearest_neighbors(a - b + c, exclude=exclude)[0]
 
     def _3_cos_add(self, a, b, c, model: SeaQuBeWordEmbeddingsModel, exclude=[]):
         vocab_len = model.matrix().shape[0]
@@ -584,8 +584,9 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
         log.info(f"WordAnalogy: target={target}")
 
 
-        detected_targets = self.measure_method(a, b, c, self.model,
-                                                #self.model.wv[row.word1], self.model.wv[row.word2],self.model.wv[row.word3], self.model,
+        detected_targets = self.measure_method(self.model.wv[a], self.model.wv[b],self.model.wv[c], self.model,
+                                        #a, b, c, self.model,
+
                                                exclude=[a, b, c])
         #row.word1, row.word2, row.word3
 
