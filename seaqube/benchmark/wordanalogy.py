@@ -581,9 +581,11 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
 
         log.info(f"WordAnalogy: target={row.target}")
 
-        detected_targets = self.measure_method(row.word1, row.word2, row.word3,self.model,
+        a, b, c = row.word1.lower(), row.word2.lower(), row.word3.lower()
+        detected_targets = self.measure_method(a, b, c, self.model,
                                                 #self.model.wv[row.word1], self.model.wv[row.word2],self.model.wv[row.word3], self.model,
-                                               exclude=[row.word1, row.word2, row.word3])
+                                               exclude=[a, b, c])
+        #row.word1, row.word2, row.word3
 
         log.info(f"WordAnalogy: detected_targets={detected_targets}")
 
