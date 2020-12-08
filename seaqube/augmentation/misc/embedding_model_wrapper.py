@@ -5,32 +5,41 @@ This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in 
 '''
 
 from abc import ABC, abstractmethod
+from typing import List
 
-from seaqube.nlp.types import SeaQuBeNLPModel2WV
+from seaqube.nlp.types import SeaQuBeNLPModel2WV, SeaQuBeWordEmbeddingsModel
 
 
-class PreTrainedModel(ABC):
+class PreTrainedModel(SeaQuBeWordEmbeddingsModel):
     @abstractmethod
     def similar_by_word(self, word, topn=10):
         pass
 
-    @property
-    @abstractmethod
-    def wv(self):
-        pass
 
-class PreTrainedFTRawEN():
+
+
+class PreTrainedFTRawEN(SeaQuBeWordEmbeddingsModel):
     def __init__(self, raw_model):
         self.raw_model = raw_model
-
+        vocabs = list(self.raw_model[13].keys())
+        self.__wv = SeaQuBeNLPModel2WV(vocabs, self.raw_model[15][0:len(vocabs)])
     #self.loaded_model.similar_by_word(word, topn)
 
     @property
     def wv(self):
-        vocabs = list(self.raw_model[13].keys())
-        return SeaQuBeNLPModel2WV(vocabs, self.raw_model[15][0:len(vocabs)])
+        return self.__wv
 
-class PreTrainedGensimEN(PreTrainedModel):
+    def vocabs(self) -> List[str]:
+        return self.__wv.vocabs
+
+    def word_vector(self, word):
+        return self.__wv[word]
+
+    def matrix(self):
+        return self.__wv.matrix
+
+
+class PreTrainedGensimEN(SeaQuBeWordEmbeddingsModel):
     def __init__(self, loaded_model):
         self.loaded_model = loaded_model
 
@@ -40,5 +49,14 @@ class PreTrainedGensimEN(PreTrainedModel):
     @property
     def wv(self):
         return self.loaded_model.wv
+
+    def vocabs(self) -> List[str]:
+        return list(self.loaded_model.wv.vocab)
+
+    def word_vector(self, word):
+        return self.loaded_model.wv[word]
+
+    def matrix(self):
+        return self.loaded_model.wv.vectors
 
 
