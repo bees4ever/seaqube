@@ -534,7 +534,7 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
         # original
         #return self.w.nearest_neighbors(self.w[b] - self.w[a] + self.w[c], exclude=[a, b, c])[0]
         # half adapted
-        return self.w.nearest_neighbors(a - b + c, exclude=exclude)[0]
+        return self.w.nearest_neighbors(b - a + c, exclude=exclude)[0]
 
     def _3_cos_add(self, a, b, c, model: SeaQuBeWordEmbeddingsModel, exclude=[]):
         vocab_len = model.matrix().shape[0]
