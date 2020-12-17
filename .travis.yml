@@ -7,6 +7,7 @@ dist: bionic
 # command to install dependencies
 install:
   - sudo apt-get update
+  - pip install chardet==3.0.4
   - python setup.py install
   - pip install coveralls
   - pip install pathos
