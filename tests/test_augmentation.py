@@ -185,6 +185,12 @@ class TestTranslationAugmentation(unittest.TestCase):
         self.assertLessEqual(len(augmented), 7 * 10)
 
 
+    def test_one_line(self):
+        translation = TranslationAugmentation(max_length=1)
+        augmented = translation([TEST_CORPUS[0]])
+
+        self.assertLessEqual(len(augmented), 1)
+
 class TestActive2PassiveAugmentation(unittest.TestCase):
     def test_corpus(self):
         a2p = Active2PassiveAugmentation()
@@ -312,8 +318,9 @@ class TestAugmentation(unittest.TestCase):
     def test_streaming(self):
         streamer = AugmentationStreamer([TranslationAugmentation(max_length=1), QwertyAugmentation(seed=424242, max_length=2)], reduction_chain=[UniqueCorpusReduction()])
         plain_output = streamer(TEST_CORPUS)
+        print(plain_output)
 
-        self.assertAlmostEqual(len(plain_output), 102, delta=10)
+        self.assertAlmostEqual(len(plain_output), 11, delta=5)
 
     def test_chaining(self):
         import logging
@@ -325,7 +332,7 @@ class TestAugmentation(unittest.TestCase):
 
         augmented_and_unique = pipe(created_corpus)
 
-        self.assertEqual(4, len(augmented_and_unique))
+        self.assertEqual(1, len(augmented_and_unique))
 
 
 if __name__ == "__main__":

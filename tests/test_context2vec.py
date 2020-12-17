@@ -21,8 +21,8 @@ corpus = [['till', 'this', 'moment', 'i', 'never', 'knew', 'myself', '.'],
 
 class TestContext2Vec(unittest.TestCase):
     def test_training(self):
-        c2v = Context2Vec()
-        c2v.train(corpus, epoch=1)
+        c2v = Context2Vec(epoch=1)
+        c2v.train(corpus)
         c2v.save("c2v_0001")
 
     def test_loading(self):

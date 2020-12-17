@@ -50,6 +50,7 @@ class TranslationAugmentation(SingleprocessingAugmentation):
                     this flag, most for testing purpose
             seed: fix the randomness with a seed for testing purpose
         """
+        super(TranslationAugmentation, self).__init__()
         self.translator = Translator()
         self.base_lang = base_lang
         self.max_length = max_length
@@ -58,7 +59,7 @@ class TranslationAugmentation(SingleprocessingAugmentation):
         self.seed = seed
         self.timeout = timeout
         self.last_call = 0.0
-        super(TranslationAugmentation, self).__init__()
+
 
 
     def get_config(self):
@@ -124,4 +125,4 @@ class TranslationAugmentation(SingleprocessingAugmentation):
                     break
             texts.append(tmp_text)
 
-        return tokenize_corpus(texts, verbose=False)[0: self.max_length]
+        return tokenize_corpus(texts[0: self.max_length], verbose=False)

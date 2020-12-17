@@ -101,10 +101,8 @@ def lazy_sample(population: Iterable, length: int, k: int, random):
     if k > length:
         raise ValueError(f"k is greater then length, {k} > {length}, a sample is not possible. The max length is: 1000000")
 
-
-
     indecies = sorted(random.sample(range(length), k))
-    print("INDEX", indecies)
+
     try:
         next_index = indecies.pop(0)
 

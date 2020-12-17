@@ -100,8 +100,8 @@ class EDAAugmentation(MultiprocessingAugmentation):
             return []
 
         try:
-            return tokenize_corpus(self.eda(sentence, self.alpha_sr, self.alpha_ri, self.alpha_rs, self.p_rd, self.num_aug),
-                                    verbose=False)[0: self.max_length]
+            eda = self.eda(sentence, self.alpha_sr, self.alpha_ri, self.alpha_rs, self.p_rd, self.num_aug)
+            return tokenize_corpus(eda, verbose=False)[0: self.max_length]
         except ValueError:
             return []
 

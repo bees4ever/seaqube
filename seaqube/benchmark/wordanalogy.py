@@ -65,14 +65,8 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
             Nearest neighbors.
         """
         k = 10
-        # exclude = []
         metric = "cosine"
 
-        # if isinstance(word, str):
-        #     assert word in vocabs, "Word not found in the vocabulary"
-        #     v = w2v.wv[word]
-        # else:  # otherwise it is a vector
-        #     v = word
         v = b - a + c
 
         D = pairwise_distances(model.matrix(), v.reshape(1, -1), metric=metric)
@@ -130,12 +124,8 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
 
         log.info(f"WordAnalogy: target={target}")
 
-
         detected_targets = self.measure_method(self.model.wv[a], self.model.wv[b],self.model.wv[c], self.model,
-                                        #a, b, c, self.model,
-
                                                exclude=[a, b, c])
-        #row.word1, row.word2, row.word3
 
         log.info(f"WordAnalogy: detected_targets={detected_targets}")
 

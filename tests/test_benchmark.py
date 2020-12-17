@@ -18,7 +18,6 @@ from seaqube.tools.io import load_json
 from gensim.models import FastText
 from seaqube.nlp.seaqube_model import BaseModelWrapper
 from seaqube.nlp.tools import gensim_we_model_to_custom_we_model
-from gensim.models.base_any2vec import BaseWordEmbeddingsModel
 from gensim.models.callbacks import CallbackAny2Vec
 from progressbar import ProgressBar
 
@@ -30,7 +29,7 @@ class GensimEpochLogger(CallbackAny2Vec):
         self.epoch = 0
         self.bar = ProgressBar(max_value=epochs)
 
-    def on_train_begin(self, model: BaseWordEmbeddingsModel):
+    def on_train_begin(self, model):
         pass
 
     def on_epoch_begin(self, model):
@@ -114,7 +113,7 @@ class TestWordAnalogyBenchmark(unittest.TestCase):
         res = simi_bench(nlp.model)
         end = time.time()
         print(test_set, "result = ", res, "time = ", end-start)
-        self.assertAlmostEqual(res.score, 0.0, delta=0.01)
+        self.assertAlmostEqual(res.score, 0.5, delta=0.01)
 
     def test_simple_benchmark(self):
         # need to load a simple model, i.e. small dataset
@@ -130,7 +129,7 @@ class TestWordAnalogyBenchmark(unittest.TestCase):
                 res = simi_bench(nlp.model)
                 end = time.time()
                 print(test_set, "result = ", res, "time=", end-start)
-                self.assertAlmostEqual(res.score, 0.0, delta=0.01)
+                self.assertAlmostEqual(res.score, 0.5, delta=0.01)
 
 
 class TestWordOutlierBenchmark(unittest.TestCase):
@@ -153,7 +152,7 @@ class TestSemanticWordnet(unittest.TestCase):
 
         self.assertEqual(length, 1378)  # this is predictable, except model/corpus changes
 
-        swb = SemanticWordnetBenchmark(word_pairs, True, 2)
+        swb = SemanticWordnetBenchmark(word_pairs, False, 2)
         self.assertEqual(length, 1378)
         results = swb(model=nlp.model).to_dict()
         self.assertEqual(type(results), dict)

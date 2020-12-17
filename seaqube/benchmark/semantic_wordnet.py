@@ -79,7 +79,7 @@ class SemanticWordnetBenchmark(BaseWordEmbeddingBenchmark):
                 prg.update(prg.value + 1)
 
         else:
-            for word_one, word_two in progressbar(self.word_pairs):
+            for word_one, word_two in progressbar(filtered_pairs):
                 graph_sim.append(SemanticWordnetBenchmark.wordnet_similarity(word_one, word_two))
 
         if len(model_sim) < 2:

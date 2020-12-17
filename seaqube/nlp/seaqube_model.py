@@ -17,14 +17,22 @@ dill._dill._reverse_typemap['ClassType'] = type
 import numpy
 from nltk import word_tokenize
 import multiprocessing
-from seaqube.tools.math import sif
+from seaqube.tools.math import sif, cosine
 from seaqube.tools.types import Configable
 
 
 class SeaQuBeNLPToken:
-    def __init__(self, text, vector):
+    def __init__(self, text, vector, nlp):
         self.text = text
         self.vector = vector
+        self.nlp = nlp
+
+    def similarity(self, word):
+        if type(word) == str:
+            doc = self.nlp(word)
+            return cosine(self.vector, doc.vector)
+        else:
+            raise NotImplemented("Other input then text is not supported, yet")
 
     def __str__(self):
         return self.text
@@ -34,7 +42,9 @@ class SeaQuBeNLPToken:
 
 
 class SeaQuBeNLPDoc:
-    def __init__(self, docs, text, word_frequency):
+    def __init__(self, docs, text, word_frequency, nlp):
+        # nlp is of type SeaQuBeNLP
+        self.nlp = nlp
         self.docs = docs
         self.original_text = text
         self.word_frequency = word_frequency
@@ -53,6 +63,20 @@ class SeaQuBeNLPDoc:
     @property
     def sif_vector(self):
         return sif(self.word_frequency, [self.docs])
+
+    def similarity(self, text, vector="mean"):
+        doc = None
+        if type(text) == str:
+            doc = self.nlp(text)
+        else:
+            raise NotImplemented("Other input then text is not supported, yet")
+
+        if vector == "mean":
+            return cosine(self.vector, doc.vector)
+        elif vector == "sif":
+            return cosine(self.sif_vector, doc.sif_vector)
+        else:
+            raise NotImplemented("One vector types [mean, sif] are implemented")
 
     def __repr__(self):
         return str(self)
@@ -89,11 +113,11 @@ class SeaQuBeNLP:
         return self.model.vocabs()
 
     def w2v(self, word):
-        return SeaQuBeNLPToken(word, self.w2v_embed(word))
+        return SeaQuBeNLPToken(word, self.w2v_embed(word), self)
 
     def __call__(self, text):
         docs = [self.w2v(token.lower()) for token in word_tokenize(text) if token.isspace() is False]
-        return SeaQuBeNLPDoc(docs, text, self.word_frequency)
+        return SeaQuBeNLPDoc(docs, text, self.word_frequency, self)
 
     def __str__(self):
         return f"CustomNLPDoc(model={self.model})@{hex(self.__hash__())}"
