@@ -122,14 +122,52 @@ class TestWordAnalogyBenchmark(unittest.TestCase):
         #nlp = SeaQuBeNLPLoader.load_model_from_tin_can(model.get(), 'small_model')
         nlp = SeaQuBeCompressLoader.load_compressed_model(model_path(), 'test_model')
 
+        scores = {
+            "semeval":{
+                '3CosAdd': 0.0,
+                'VectorCalc': 0.0,
+                'PairDir': 0.0,
+                'SpaceEvolution': 0.0,
+                'NearestNeighbors': 0.0
+            },
+            "google-analogies": {
+                '3CosAdd': 0.0,
+                'VectorCalc': 0.0,
+                'PairDir': 0.0,
+                'SpaceEvolution': 0.0,
+                'NearestNeighbors': 0.5
+            },
+            "sat": {
+                '3CosAdd': 0.0,
+                'VectorCalc': 0.0,
+                'PairDir': 0.0,
+                'SpaceEvolution': 0.0,
+                'NearestNeighbors': 0.0
+            },
+            "msr": {
+                '3CosAdd': 0.0,
+                'VectorCalc': 0.0,
+                'PairDir': 0.0,
+                'SpaceEvolution': 0.0,
+                'NearestNeighbors': 0.0
+            },
+            "jair": {
+                '3CosAdd': 0.0,
+                'VectorCalc': 0.0,
+                'PairDir': 0.0,
+                'SpaceEvolution': 0.0,
+                'NearestNeighbors': 0.0
+            },
+        }
+
         for test_set in ['semeval', 'google-analogies', 'sat', 'msr', 'jair']:
-            for mm in ['3CosAdd', 'VectorCalc', 'PairDir', 'SpaceEvolution', 'NearestNeighbors']:
+            for i, mm in enumerate(['3CosAdd', 'VectorCalc', 'PairDir', 'SpaceEvolution', 'NearestNeighbors']):
                 start = time.time()
                 simi_bench = WordAnalogyBenchmark(test_set, method=mm, multiprocessing=True)
                 res = simi_bench(nlp.model)
                 end = time.time()
-                print(test_set, "result = ", res, "time=", end-start)
-                self.assertAlmostEqual(res.score, 0.5, delta=0.01)
+                print(test_set, "result = ", res.score, scores[test_set][mm], mm, "time=", end-start)
+                self.assertAlmostEqual(res.score, scores[test_set][mm], delta=0.01)
 
 
 class TestWordOutlierBenchmark(unittest.TestCase):
