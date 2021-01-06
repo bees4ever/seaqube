@@ -24,7 +24,6 @@ from vec4ir import WordCentroidDistance, Matching, Retrieval
 from numpy import array, mean
 
 
-
 class Corpus4IRBenchmark(BaseWordEmbeddingBenchmark):
     def __init__(self, small_corpus, model="w2v", threshold=0.9):
         if model not in ["ft", "w2v"]:
@@ -70,7 +69,5 @@ class Corpus4IRBenchmark(BaseWordEmbeddingBenchmark):
 
         return BenchmarkScore(mean_scores['f1_score'], dict(recall=mean_scores['recall'], precision=mean_scores['precision']))
 
-
     def get_config(self):
         return dict(class_name=str(self), model=self.model.__class__.__name__,)
-

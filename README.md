@@ -14,14 +14,12 @@ This python framework provides several text augmentation implementations and wor
 
 <img src="https://travis-ci.org/bees4ever/SeaQuBe.svg?branch=master&amp;status=started" alt="build:started">
 
-
 ## Features
 
-* Text Data Augmentation
-* Chaining and Reducing of Text Data Augmentations
-* Word Embedding Quality Methods
-* Interactive NLM Model Wrapper
-
+*  Text Data Augmentation
+*  Chaining and Reducing of Text Data Augmentations
+*  Word Embedding Quality Methods
+*  Interactive NLM Model Wrapper
 
 ## Demo
 *   [Augmentation in three lines](https://github.com/bees4ever/SeaQuBe#quick-demo)
@@ -29,8 +27,6 @@ This python framework provides several text augmentation implementations and wor
 *   [Example of Text Augmentation Chaining](https://github.com/bees4ever/SeaQuBe/blob/master/examples/chained_augmentation.ipynb)
 *   [Example of Word Embedding Evaluation](https://github.com/bees4ever/SeaQuBe/blob/master/examples/word_embedding_evaluation.ipynb)
 *   [Example of Interactive NLP](https://github.com/bees4ever/SeaQuBe/blob/master/examples/nlp.ipynb)
-
-
 
 ## Augmentation
 | Level  | Augmenter  | Description |
@@ -51,7 +47,6 @@ extending the ``BaseReduction`` class.
 |Streaming|AugmentationStreamer| Run augmentation for each document through all chained augmentations.  |
 |Reducing| UniqueCorpusReduction | Getting a list of documents, only unique documents are returned.  
 
-
 ## Word Embedding Evaluation
 | Method  | Description |
 |:---:|:---:|
@@ -60,12 +55,11 @@ extending the ``BaseReduction`` class.
 |WordOutliersBenchmark|This method benchmark how good a outlier of a group of words can be detected.|
 |SemanticWordnetBenchmark|Based on the WordNet graph, the goodnes of the semantic / similarity of a nlp model is benchmarked.|
 
-
 ## Installation
 
 `SeaQuBe` can be installed from PyPip using: `pip install seaqube` or run in the main directory: `python setup.py install`.
 
-### External Dependencies:
+### External Dependencies
 
 Some external dependencies are not installed automatically, but `seaqube` or `nltk` might throw errors with an instruction what to do.
 For example ``seqube`` might ask you to run:
@@ -80,7 +74,6 @@ from seaqube.augmentation.word import Active2PassiveAugmentation, EDAAugmentatio
 translate = TranslationAugmentation(max_length=2)
 translate.doc_augment(['This', 'is', 'a', 'tokenized', 'corpus'])
 ````
-
 
 ## Setup Dev Environment
 _TODO_
