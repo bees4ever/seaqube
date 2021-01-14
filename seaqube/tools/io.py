@@ -1,7 +1,12 @@
+"""
+Copyright (c) 2021 by Benjamin Manns
+This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
+:author: Benjamin Manns
+
+NLP IO Toolkit (JSON and Compressed data)
+"""
 import json
-
 import dill
-
 from seaqube.tools.types import Writeable
 
 

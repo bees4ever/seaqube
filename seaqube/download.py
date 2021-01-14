@@ -1,22 +1,23 @@
-'''
-Copyright (c) 2020 by Benjamin Manns
+"""
+Copyright (c) 2021 by Benjamin Manns
 This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
 :author: Benjamin Manns
-'''
+"""
 
 import tempfile
 import urllib.request
 from os.path import join, isfile, isdir, exists
 from os import mkdir, system
 from tqdm import tqdm
-
 import gzip
 import shutil
-
 from seaqube.package_config import package_path, log
-import subprocess
+
 
 class DownloadProgressBar(tqdm):
+    """
+    A simple tqdm based progress bar of downloading data.
+    """
     def update_to(self, b=1, bsize=1, tsize=None):
         if tsize is not None:
             self.total = tsize
@@ -24,6 +25,10 @@ class DownloadProgressBar(tqdm):
 
 
 class ExternalDownload:
+    """
+    Makes it possible to download external data with a one-line. Some data are not pre-installed because of their size.
+    This classe implements all easy-downloadable data like external packages or pre-trained models.
+    """
     def __call__(self, what):
         if what == "fasttext-en-pretrained":
             self.__download_fasttext_en_pretrained()

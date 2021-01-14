@@ -1,3 +1,9 @@
+"""
+Copyright (c) 2021 by Benjamin Manns
+This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
+:author: Benjamin Manns
+"""
+
 # Following instructions from https://medium.com/better-programming/publishing-your-python-packages-to-pypi-e48c169f4f09
 
 # Import our newly installed setuptools package.
@@ -32,7 +38,7 @@ setuptools.setup(
     # Distribution name the package. Name must be unique so adding your username at the end is common.
     name="seaqube",
     # Version number of your package. Semantic versioning is commonly used.
-    version="0.1.0",
+    version="0.1.1",
     # Author name.
     author="Benjamin Manns",
     # Author's email address.

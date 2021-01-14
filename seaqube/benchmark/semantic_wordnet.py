@@ -1,3 +1,9 @@
+"""
+Copyright (c) 2021 by Benjamin Manns
+This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
+:author: Benjamin Manns
+"""
+
 from typing import Iterable
 
 from progressbar import ProgressBar
@@ -12,6 +18,12 @@ from seaqube.tools.umproc import ForEach
 
 
 class SemanticWordnetBenchmark(BaseWordEmbeddingBenchmark):
+    """
+    The Semantic Networks Evaluation uses the WordNet (https://wordnet.princeton.edu/) Python
+    library called NLTK2. The ‘Wu-Palmer-Similarity’ is used to calculate similarities between synsets inside a WordNet
+    graph which is used as the ground of truth for the similarity of two words. This similarity is used to compare
+    the similarity score of two words using the word embeddings which the object of evaluation.
+    """
     def __init__(self, word_pairs: Iterable, multiprocessing: bool = False, max_cpus=None):
         self.word_pairs = word_pairs
         self.multiprocessing = multiprocessing

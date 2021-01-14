@@ -1,7 +1,17 @@
+"""
+Copyright (c) 2021 by Benjamin Manns
+This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
+:author: Benjamin Manns
+"""
+
 from seaqube.package_config import log
 from seaqube.tools.types import Configable
 
+
 class ChainTerm(Configable):
+    """
+    Wraps simple methods to a reduction augmenation.
+    """
     def __init__(self, call: callable):
         self.call = call
 
@@ -19,6 +29,9 @@ class ChainTerm(Configable):
 
 
 class CallOnOneChain(object):
+    """
+    Approach to chaining NLP augmentation one after another and NOT piping every doc to each augmentation.
+    """
     def __init__(self, callables: list):
         self.callables: list = callables
         if len(self.callables) == 0:

@@ -1,8 +1,8 @@
-'''
-Copyright (c) 2020 by Benjamin Manns
+"""
+Copyright (c) 2021 by Benjamin Manns
 This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
 :author: Benjamin Manns
-'''
+"""
 
 from abc import abstractmethod
 from typing import List
@@ -100,8 +100,10 @@ class BaseAugmentation(Configable):
         pass
 
 
-
 class MultiprocessingAugmentation(BaseAugmentation):
+    """
+    The base implementation for augmentation which can run in multiprocessing
+    """
     def __multi_wrapper_doc_augment(self, doc):
         return self.doc_augment(doc=doc)
 
@@ -135,6 +137,9 @@ class MultiprocessingAugmentation(BaseAugmentation):
 
 
 class SingleprocessingAugmentation(BaseAugmentation):
+    """
+    The base implementation for augmentation which simply run in single processing
+    """
     def __call__(self, corpus):
 
         augmented_corpus = []
@@ -148,6 +153,10 @@ class SingleprocessingAugmentation(BaseAugmentation):
 
 
 class AugmentationStreamer:
+    """
+    The base implementation is doing augmentation streaming. This class sets up a stream like operation of a list of
+    augmentation as well as a list of reduction classes.
+    """
     def __init__(self, augmentations: List[BaseAugmentation], reduction_chain: List[BaseReduction] = [],
                  writer: Writeable = None):
         self.augmentations = augmentations
@@ -199,6 +208,10 @@ class AugmentationStreamer:
 
 
 class NLPAugWrapper(SingleprocessingAugmentation):
+    """
+    This wraps a class of the package `nlpaug` (https://pypi.org/project/nlpaug/), to make it integrable in the
+    augmentation pipeline.
+    """
     def shortname(self):
         return str(self.nlp_aug_object)
 

@@ -1,8 +1,11 @@
-'''
-Copyright (c) 2020 by Benjamin Manns
+"""
+Copyright (c) 2021 by Benjamin Manns
 This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
 :author: Benjamin Manns
-'''
+
+The nlp tool-kit which makes it possible to do text and doc loading, saving, processing in one-liners.
+
+"""
 
 from collections import Counter
 from copy import deepcopy
@@ -12,9 +15,13 @@ from seaqube.package_config import log
 from nltk import word_tokenize
 from nltk.tokenize.treebank import TreebankWordDetokenizer
 from progressbar import progressbar
+
 anti_tokenizer = TreebankWordDetokenizer()
 
 def word_count_list(double_list):
+    """
+    Create a word count list of a corpus in doc format.
+    """
     word_count = Counter()
 
     for sentence in double_list:
@@ -32,6 +39,10 @@ def c2_we_model_to_custom_we_model(c2v_model):
 
 
 class DelayedListToJSONWriter:
+    """
+    @deprecated
+    Write buffer of corpus down, while not preserving gig's of text in RAM.
+    """
     def __init__(self, file_path, buffer_size=10):
         self.path = file_path
         self.buffer = []
@@ -78,12 +89,18 @@ class DelayedListToJSONWriter:
 
 
 def tokenize_corpus(sentences: Iterable, verbose=True):
+    """
+    Tokenize a list of texts.
+    """
     if verbose:
         sentences = progressbar(sentences)
     return [[token.lower() for token in word_tokenize(sentence) if token.isspace() is False] for sentence in sentences]
 
 
 def sentenceize_corpus(token_list: list, verbose=True):
+    """
+    Reverse tokenization and transform a corpus again as a list of texts.
+    """
     if verbose:
         token_list = progressbar(token_list)
     return [anti_tokenizer.detokenize(tokens) for tokens in token_list]

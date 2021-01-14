@@ -1,8 +1,8 @@
-'''
-Copyright (c) 2020 by Benjamin Manns
+"""
+Copyright (c) 2021 by Benjamin Manns
 This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
 :author: Benjamin Manns
-'''
+"""
 
 import gc
 from numpy import log as np_log, array
@@ -163,5 +163,8 @@ class UnigramAugmentation(MultiprocessingAugmentation):
         return docs[0: self.max_length]
 
     def s(self, word):
+        """
+        Calculates the score S based on the tf-idf score
+        """
         freq = self.count[word]
         return freq * self.tfidf.idf(word)

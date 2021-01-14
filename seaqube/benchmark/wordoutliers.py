@@ -1,4 +1,10 @@
-import json
+"""
+Copyright (c) 2021 by Benjamin Manns
+This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
+:author: Benjamin Manns
+"""
+
+
 import re
 from copy import deepcopy
 import numpy as np
@@ -9,10 +15,23 @@ from seaqube.benchmark._benchmark import DataSetBasedWordEmbeddingBenchmark, get
     get_list_of_shipped_test_sets, BenchmarkScore
 from seaqube.nlp.types import SeaQuBeWordEmbeddingsModel
 
+
 class NotInVocabularyError(Exception):
+    """
+    Wraps a not-in-vocab error
+    """
     pass
 
+
 class WordOutliersBenchmark(DataSetBasedWordEmbeddingBenchmark):
+    """
+    The word outlier method implemented based on public available dataset, which requires a pre processing for
+    creating word outlier challenges.
+
+    The idea is simply to detect a outlier word of a group of words.
+
+    For example `car` is the outlier in `["apple","pear","car","banana","orange"]`
+    """
     def method_name(self):
         return "wordoutliers"
 

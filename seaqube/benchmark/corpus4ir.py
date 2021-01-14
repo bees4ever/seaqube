@@ -1,8 +1,8 @@
-'''
-Copyright (c) 2020 by Benjamin Manns
+"""
+Copyright (c) 2021 by Benjamin Manns
 This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
 :author: Benjamin Manns
-'''
+"""
 
 from progressbar import progressbar
 
@@ -25,6 +25,15 @@ from numpy import array, mean
 
 
 class Corpus4IRBenchmark(BaseWordEmbeddingBenchmark):
+    """
+    An evaluation method which is based on the Word Centroid Method (vec4ir-package) to simulate an IR system and to
+    evaluate the performance the word embeddings based on how the IR scores (F_1 score). The word embeddings are used to
+    boost the IR System using the Word Centroid Method. Hence, the word embedding's  semantically correctness
+    influences the performance of the IR system.
+
+    But, the "good" and "correct" results of the IR system is based on an pre-trained model, because no real feedback
+    exists. Therefore, failures of the pre-trained model influences the evaluation.
+    """
     def __init__(self, small_corpus, model="w2v", threshold=0.9):
         if model not in ["ft", "w2v"]:
             raise ValueError("model can only be one of 'ft' or 'w2v'")

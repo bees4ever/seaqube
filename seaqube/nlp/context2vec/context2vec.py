@@ -1,6 +1,7 @@
-#!/usr/bin/env python
 """
-Learns context2vec's parametric model
+Copyright (c) 2021 by Benjamin Manns
+This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
+:author: Benjamin Manns
 """
 
 import pickle
@@ -18,6 +19,9 @@ from seaqube.nlp.context2vec.train.sentence_reader import SentenceReaderDict
 
 
 class C2VWV:
+    """
+    A word embedding class which preserves contxt2vec's word embeddings in an interactive mode.
+    """
     def __init__(self, word2index: dict, vocabs: list, matrix):
         self.matrix = matrix
         self.word2index = word2index
@@ -29,6 +33,13 @@ class C2VWV:
 
 
 class Context2Vec:
+    """
+    The Context2Vec class refactors the training and model loading process of the context2vec package which is also
+    needed and added in the source code, see also the LICENSE:
+        https://github.com/orenmel/context2vec/blob/master/LICENSE.
+
+    However, this class make it easy to word with context2vec.
+    """
     def __init__(self, trimfreq=0, ns_power=0.75, dropout=0.0, cgfile=None, gpu=-1, unit=300, batchsize=100, epoch=10, deep=True, alpha=0.001, grad_clip=None):
         self.backend_model = None
         self.target_word_units = None
@@ -204,6 +215,5 @@ class Context2Vec:
         c2v.epoch = trainings_params['epoch']
         c2v.alpha = trainings_params['alpha']
         c2v.grad_clip = trainings_params['grad_clip']
-
 
         return c2v

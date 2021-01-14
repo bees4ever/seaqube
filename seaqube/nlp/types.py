@@ -1,8 +1,8 @@
-'''
-Copyright (c) 2020 by Benjamin Manns
+"""
+Copyright (c) 2021 by Benjamin Manns
 This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
 :author: Benjamin Manns
-'''
+"""
 
 import time
 from abc import ABC, abstractmethod
@@ -15,6 +15,9 @@ from seaqube.tools.math import cosine
 
 
 class SeaQuBeWordEmbeddingsModel(ABC):
+    """
+    Base SeaQuBeWordEmbeddings, which is needed for model evaluation and the interactive NLP wrapper.
+    """
     def similarity(self, word_one, word_two) -> float:
         return cosine(self.wv[word_one], self.wv[word_two])
 
@@ -41,14 +44,19 @@ class SeaQuBeWordEmbeddingsModel(ABC):
         pass
 
 
-
 class RawModelTinCan(object):
+    """
+    Minimal NLP model transfer object for saving and loading SeaQuBe based NLP models.
+    """
     def __init__(self, model: SeaQuBeWordEmbeddingsModel, word_frequency):
         self.model = model
         self.word_frequency = word_frequency
 
 
 class BackgroundScheduler(Thread):
+    """
+    Toolkit for running background jobs.
+    """
     def __init__(self):
         self.local_scheduler = schedule.Scheduler()
         super(BackgroundScheduler, self).__init__()
@@ -65,6 +73,9 @@ class BackgroundScheduler(Thread):
 
 
 class SeaQuBeWordEmbeddingsModelC2V(SeaQuBeWordEmbeddingsModel):
+    """
+    Context2Vec wrapper for SeaQuBe.
+    """
     def __init__(self, c2v: Context2Vec):
         self.c2v = c2v
 
@@ -83,6 +94,9 @@ class SeaQuBeWordEmbeddingsModelC2V(SeaQuBeWordEmbeddingsModel):
 
 
 class SeaQuBeWordEmbeddingsModelGensim(SeaQuBeWordEmbeddingsModel):
+    """
+    Gensim (https://radimrehurek.com/gensim/) based NLP models wrapper for SeaQuBe.
+    """
     def __init__(self, gensim_model):
         self.gensim_model = gensim_model
 
@@ -101,6 +115,9 @@ class SeaQuBeWordEmbeddingsModelGensim(SeaQuBeWordEmbeddingsModel):
 
 
 class SeaQuBeWordEmbeddingsModelRawFT(SeaQuBeWordEmbeddingsModel):
+    """
+    Wrapper for SeaQuBe for official pre-trained fastText models.
+    """
     def __init__(self, raw_ft):
         vocs = list(raw_ft[13])
         self.__wv = SeaQuBeNLPModel2WV(vocs, raw_ft[15][0: len(vocs)])
@@ -120,6 +137,9 @@ class SeaQuBeWordEmbeddingsModelRawFT(SeaQuBeWordEmbeddingsModel):
 
 
 class SeaQuBeNLPModel2WV:
+    """
+    A interactive word embedding class, to easily get a word's embedding.
+    """
     def __init__(self, vocabs: list, matrix):
         self.vocabs: list = vocabs
         self.matrix = matrix
@@ -131,6 +151,9 @@ class SeaQuBeNLPModel2WV:
 
 
 class SeaQuBeWordEmbeddingsModelCompressed(SeaQuBeWordEmbeddingsModel):
+    """
+    SeaQuBe's space efficient NLP's word embedding class.
+    """
     def vocabs(self) -> List[str]:
         return self.wv_object.vocabs
 
@@ -146,13 +169,4 @@ class SeaQuBeWordEmbeddingsModelCompressed(SeaQuBeWordEmbeddingsModel):
 
     def __init__(self, wv: SeaQuBeNLPModel2WV):
         self.wv_object: SeaQuBeNLPModel2WV = wv
-
-
-
-
-class BenchmarkResult:
-    def __init__(self, pre_recall, reports):
-        self.pre_recall = pre_recall
-        self.reports = reports
-
 

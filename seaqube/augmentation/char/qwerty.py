@@ -1,8 +1,8 @@
-'''
-Copyright (c) 2020 by Benjamin Manns
+"""
+Copyright (c) 2021 by Benjamin Manns
 This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
 :author: Benjamin Manns
-'''
+"""
 
 import random
 
@@ -53,9 +53,17 @@ class QwertyAugmentation(MultiprocessingAugmentation):
         return "doc"
 
     def augmentation_implementation(self, doc):
+        """
+        Run the qwerty on every term
+        Returns: doc
+        """
         return [self.__qwerty(doc) for _ in range(self.max_length)]
 
     def __qwerty(self, doc):
+        """
+        Add typos to words, given a list of words
+        Returns: doc
+        """
         doc = map(lambda x: list(x), doc)
 
         doc_new = []
@@ -72,7 +80,6 @@ class QwertyAugmentation(MultiprocessingAugmentation):
             doc_new.append("".join(word))
 
         return doc_new
-
 
     def shortname(self):
         return "qwerty"

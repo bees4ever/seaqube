@@ -1,14 +1,17 @@
-'''
-Copyright (c) 2020 by Benjamin Manns
+"""
+Copyright (c) 2021 by Benjamin Manns
 This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
 :author: Benjamin Manns
-'''
+"""
 
 from seaqube.augmentation.reduction._reduction import BaseReduction
 from seaqube.nlp.tools import unique_2d_list
 
 
 class UniqueCorpusReduction(BaseReduction):
+    """
+    A reduce class for the augmentation streaming mode. Reduce docs while remove duplicate docs.
+    """
     def get_config(self):
         """
         Gives a dict with all relevant variables the object can recreated with (init parameters)
@@ -23,7 +26,7 @@ class UniqueCorpusReduction(BaseReduction):
         Args:
             corpus: list of list where second dimension can contain duplicates
 
-        Returns:
+        Returns: list of docs
 
         """
         return unique_2d_list(corpus)

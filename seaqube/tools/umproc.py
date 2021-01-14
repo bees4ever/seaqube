@@ -1,3 +1,11 @@
+"""
+Copyright (c) 2021 by Benjamin Manns
+This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
+:author: Benjamin Manns
+
+This file is thankfully copied from https://github.com/thouska/spotpy
+    (and also with pleasure to the cool project and team)
+"""
 import pathos.multiprocessing as mp
 
 

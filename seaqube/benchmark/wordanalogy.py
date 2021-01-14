@@ -1,8 +1,8 @@
-'''
-Copyright (c) 2020 by Benjamin Manns
+"""
+Copyright (c) 2021 by Benjamin Manns
 This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
 :author: Benjamin Manns
-'''
+"""
 import gc
 from pandas import read_csv
 import numpy as np
@@ -17,6 +17,12 @@ from seaqube.tools.umproc import ForEach
 
 
 class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
+    """
+    The very famous word embedding evaluation from Mikolov, Tomáš; Yih, Wen-tau und Zweig, Geoffrey
+    (in Linguistic regularities in continuous space word representations) is here implemented with several algorothms
+    available, where the NearestNeighbors is the fasted onel which however is copied from
+    https://github.com/kudkudak/word-embeddings-benchmarks/blob/master/web/embedding.py
+    """
     def __init__(self, test_set, method="3CosAdd", multiprocessing: bool = False, max_cpus=None):
         self.method = method
         self.max_cpus = max_cpus
@@ -158,12 +164,38 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
 
         # first filter dataset
         # all words need to be in the vocab list, otherwise it makes no sense
-        filtered_rows = []
-        for rowitem in progressbar(self.test_set.iterrows(), max_value=len(self.test_set)):
-            _, row = rowitem
 
-            if row.word1 in self.model.vocabs() and row.word2 in self.model.vocabs() and row.word3 in self.model.vocabs() and row.target in self.model.vocabs():
-                filtered_rows.append(row)
+        model_vocabs = list(self.model.vocabs())
+
+        def filter_vocabs(rowitem):
+            _, row = rowitem
+            if row.word1 in model_vocabs and row.word2 in model_vocabs and row.word3 in model_vocabs and row.target in model_vocabs:
+                return row
+            else:
+                return None
+
+        if self.multiprocessing:
+            multi_wrapper = ForEach(filter_vocabs, max_cpus=self.max_cpus)
+        else:
+            def multi_wrapper(rows):
+                for doc in rows:
+                    yield filter_vocabs(doc)
+
+        # for rowitem in progressbar(self.test_set.iterrows(), max_value=len(self.test_set)):
+        #     _, row = rowitem
+        #
+        #     if row.word1 in self.model.vocabs() and row.word2 in self.model.vocabs() and row.word3 in self.model.vocabs() and row.target in self.model.vocabs():
+        #         filtered_rows.append(row)
+
+        filtered_rows = []
+        prg = ProgressBar(max_value=len(self.test_set))
+        for correct_flag in multi_wrapper(self.test_set.iterrows()):
+            correct_hits += correct_flag
+            prg.update(prg.value + 1)
+
+
+        # first reduce model size -> save ram in copy process
+
 
         # then use filtered row for hard work
         prg = ProgressBar(max_value=len(filtered_rows))

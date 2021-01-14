@@ -1,8 +1,8 @@
-'''
-Copyright (c) 2020 by Benjamin Manns
+"""
+Copyright (c) 2021 by Benjamin Manns
 This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
 :author: Benjamin Manns
-'''
+"""
 
 from os.path import join, exists
 
@@ -16,6 +16,9 @@ from seaqube.tools.types import Configable
 
 
 class BenchmarkScore:
+    """
+    Preserves benchmark results, for easy data transfer.
+    """
     def __init__(self, score, payload=None):
         self.score = score
         self.payload = payload
@@ -45,6 +48,10 @@ class BaseWordEmbeddingBenchmark(Configable):
 
 
 class DataSetBasedWordEmbeddingBenchmark(BaseWordEmbeddingBenchmark):
+    """
+    Base class for benchmark methods which needs external labeled datasets. The loading process is implemented to easy
+    write an own embedding evaluation.
+    """
     def __init__(self, test_set):
         self.test_set_name=test_set
         if isinstance(test_set, str):

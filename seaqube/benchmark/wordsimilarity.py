@@ -1,8 +1,8 @@
-'''
-Copyright (c) 2020 by Benjamin Manns
+"""
+Copyright (c) 2021 by Benjamin Manns
 This file is part of the Semantic Quality Benchmark for Word Embeddings Tool in Python (SeaQuBe).
 :author: Benjamin Manns
-'''
+"""
 
 from pandas import read_csv
 from progressbar import progressbar
@@ -13,6 +13,14 @@ from seaqube.package_config import log
 
 
 class WordSimilarityBenchmark(DataSetBasedWordEmbeddingBenchmark):
+    """
+    This class implements the word similarity challenge which is based on human scored word pairs.
+
+    See also Milajevs, Dmitrijs und Griffiths, Sascha: A proposal for linguistic similarity datasets based on
+            commonality lists. arXiv preprint arXiv:1605.04553 (2016)
+
+
+    """
     def method_name(self):
         return "wordsimilarity"
 
