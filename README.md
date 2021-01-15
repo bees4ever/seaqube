@@ -6,6 +6,9 @@
 
 # SeaQuBe
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/50fef8e32b794b65b10651de44637cf8)](https://app.codacy.com/gh/bees4ever/seaqube?utm_source=github.com&utm_medium=referral&utm_content=bees4ever/seaqube&utm_campaign=Badge_Grade)
+
+
 Semantic Quality Benchmark for Word Embeddings, i.e. Natural Language Models in Python. Acronym `SeaQuBe` or `seaqube`.
 
 This python framework provides several text augmentation implementations and word embedding quality evaluation methods. It is designed to fit in your machine learning pipeline. The `BaseAugmentation` class provides the same api as the python package [nlpaug](https://github.com/makcedward/nlpaug/), so that this packages can used together smoothly. However `BaseAugmentation` provides also other methods. Detailed examples see beneath.
