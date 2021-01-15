@@ -1,7 +1,7 @@
 <p align="center">
     <br>
     <img width="200px" src="https://github.com/bees4ever/SeaQuBe/raw/master/logo/seaqube_logo_v1.png"/>
-    <br>
+<br>
 <p>
 
 # SeaQuBe
@@ -12,7 +12,8 @@ This python framework provides several text augmentation implementations and wor
 
 `SeaQuBe` provides also a toolkit to wrap a trained nlp model to a nice interactive tool.
 
-<img src="https://travis-ci.org/bees4ever/SeaQuBe.svg?branch=master&amp;status=started" alt="build:started">
+<img src="https://travis-ci.org/bees4ever/SeaQuBe.svg?branch=master&amp;status=started" alt="build:started"> <img src="https://api.codacy.com/project/badge/Grade/50fef8e32b794b65b10651de44637cf8"  alt="code:quality">
+
 
 ## Features
 
