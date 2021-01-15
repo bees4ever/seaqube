@@ -189,8 +189,9 @@ class WordAnalogyBenchmark(DataSetBasedWordEmbeddingBenchmark):
 
         filtered_rows = []
         prg = ProgressBar(max_value=len(self.test_set))
-        for correct_flag in multi_wrapper(self.test_set.iterrows()):
-            correct_hits += correct_flag
+        for row in multi_wrapper(self.test_set.iterrows()):
+            if row is not None:
+                filtered_rows.append(row)
             prg.update(prg.value + 1)
 
 
