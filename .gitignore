@@ -131,3 +131,6 @@ dmypy.json
 
 
 .vscode
+
+examples/seaberta
+examples/runs

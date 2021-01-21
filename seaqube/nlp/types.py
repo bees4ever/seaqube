@@ -34,6 +34,9 @@ class SeaQuBeWordEmbeddingsModel(ABC):
     def wv(self):
         raise NotImplementedError()
 
+    def context_embedding(self, words, position):
+        raise NotImplementedError()
+
     @abstractmethod
     def matrix(self):
         """

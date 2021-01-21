@@ -32,6 +32,8 @@ class SeaQuBeNLPToken:
         if type(word) == str:
             doc = self.nlp(word)
             return cosine(self.vector, doc.vector)
+        elif type(word) is SeaQuBeNLPToken:
+            return cosine(self.vector, word.vector)
         else:
             raise NotImplemented("Other input then text is not supported, yet")
 
@@ -98,6 +100,12 @@ class SeaQuBeNLP:
         self.word_frequency = tin_can.word_frequency
         self.__wv = self.model.wv
         self.human_readable_name = name
+        self.context_based = False
+        try:
+            self.model.context_embedding([self.__wv.vocabs[1]], 0)
+            self.context_based = True
+        except NotImplemented:
+            pass
 
     def w2v_embed(self, word):
         try:
@@ -117,11 +125,19 @@ class SeaQuBeNLP:
         return SeaQuBeNLPToken(word, self.w2v_embed(word), self)
 
     def __call__(self, text):
-        docs = [self.w2v(token.lower()) for token in word_tokenize(text) if token.isspace() is False]
+        tokens = [token.lower() for token in word_tokenize(text) if token.isspace() is False]
+
+        if self.context_based:
+            docs = []
+            for pos, word in enumerate(tokens):
+                docs.append(SeaQuBeNLPToken(word, self.model.context_embedding(tokens, pos), self))
+        else:
+            docs = [self.w2v(token) for token in tokens]
+
         return SeaQuBeNLPDoc(docs, text, self.word_frequency, self)
 
     def __str__(self):
-        return f"CustomNLPDoc(model={self.model})@{hex(self.__hash__())}"
+        return f"SeaQuBeNLPDoc(model={self.model})@{hex(self.__hash__())}"
 
     def __repr__(self):
         return str(self)
