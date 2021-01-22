@@ -104,7 +104,7 @@ class SeaQuBeNLP:
         try:
             self.model.context_embedding([self.__wv.vocabs[1]], 0)
             self.context_based = True
-        except NotImplemented:
+        except NotImplementedError:
             pass
 
     def w2v_embed(self, word):
