@@ -5,7 +5,7 @@ from functools import reduce
 from os.path import join, basename
 import random
 from typing import List
-
+import logging
 import numpy
 import torch
 from tokenizers import ByteLevelBPETokenizer
@@ -19,6 +19,7 @@ from seaqube.nlp.roberta.roberta_training import RoBERTaSmall
 from seaqube.nlp.tools import sentenceize_corpus
 from seaqube.nlp.types import SeaQuBeWordEmbeddingsModel, SeaQuBeNLPModel2WV
 
+logger = logging.getLogger("SEABERTA")
 
 class SeaBERTaWV:
     def __init__(self, vocabs: dict, matrix, tokenizer: AutoTokenizer):
@@ -61,11 +62,11 @@ class SeaBERTa:
 
     def prepare_sets(self):
         corpus = deepcopy(self.corpus)
-        train, eval = train_test_split(corpus, shuffle=True)
+        train, eval_set = train_test_split(corpus, shuffle=True)
 
         self.to_txt(corpus, f"{self.dataset_name}.txt")
         self.to_txt(train, f"{self.dataset_name}_train.txt")
-        self.to_txt(eval, f"{self.dataset_name}_eval.txt")
+        self.to_txt(eval_set, f"{self.dataset_name}_eval.txt")
 
         # calc vocab size
 
@@ -75,7 +76,7 @@ class SeaBERTa:
         self.corpus = corpus
 
         raw_vocab_path = f"{self.main_path}/{self.dataset_name}.txt"
-        vocab_size = self.prepare_sets()
+        vocab_size = self.prepare_sets() + 1000
 
         config = {
             "architectures": [
@@ -96,9 +97,6 @@ class SeaBERTa:
             "vocab_size": vocab_size
         }
 
-
-
-
         with open(f"{self.main_path}/config.json", 'w') as fp:
             json.dump(config, fp)
 
@@ -111,21 +109,17 @@ class SeaBERTa:
                         min_frequency=2,
                         special_tokens=["<s>", "<pad>", "</s>", "<unk>", "<mask>"])
 
-        #tokenizer_path = f"{dir_path}/roberta_{dataset}_{aug}_tokenizer"
         try:
             tokenizer.save_model(self.main_path)
         except Exception:
             tokenizer.save(self.main_path)
-
-
 
         tokenizer_config = {"max_len": 512}
 
         with open(f"{self.main_path}/tokenizer_config.json", 'w') as fp:
             json.dump(tokenizer_config, fp)
 
-
-        # Model paths
+        # model paths
         self.train_params["output_dir"] = f"{self.main_path}/output"
         self.train_params["model_type"] = "roberta"
         self.train_params["config_name"] = self.main_path
@@ -164,7 +158,11 @@ class SeaBERTa:
         To do so, the model and tokenizer needs to be loaded
         """
 
-        text = sentenceize_corpus(words)
+        words = [word.lower() for word in words]
+        text = ' ' + sentenceize_corpus([words])[0]
+
+        logger.debug(f"[context_embedding] words: {words}")
+        logger.debug(f"[context_embedding] text: {text}")
         snippets = self.tokenizer.encode(text)[1:-1]
 
         input_ids = torch.tensor(self.tokenizer.encode(text)).unsqueeze(0)  # Batch size 1
@@ -174,7 +172,10 @@ class SeaBERTa:
         index_2_word = {v: k for k, v in self.vocabs.items()}
 
         splitted = [index_2_word[index] for index in snippets]
-        position = 0
+        logger.debug(f"[context_embedding] splitted: {splitted}")
+        logger.debug(f"[context_embedding] snippets: {snippets}")
+
+        pos_in_token = 0
 
         summarized_indices = [[] for _ in range(len(words))]
 
@@ -182,21 +183,22 @@ class SeaBERTa:
         for j, word_part in enumerate(splitted):
             word_part = word_part.replace('Ġ', '')
 
-            #print("debug 1", word_part, j, position, tmp_orig_tokens[position])
-            if word_part not in tmp_orig_tokens[position]:
-                position += 1
+            #print("debug 1", word_part, j, pos_in_token, tmp_orig_tokens[pos_in_token])
+            if word_part not in tmp_orig_tokens[pos_in_token]:
+                pos_in_token += 1
 
-            if word_part in tmp_orig_tokens[position]:
+            if word_part in tmp_orig_tokens[pos_in_token]:
                 #print("IN?")
-                summarized_indices[position].append(j + 1)
-                tmp_orig_tokens[position] = tmp_orig_tokens[position].replace(word_part, '', 1)
-                #print("debug 2", tmp_orig_tokens[position])
+                summarized_indices[pos_in_token].append(j + 1)
+                tmp_orig_tokens[pos_in_token] = tmp_orig_tokens[pos_in_token].replace(word_part, '', 1)
+                #print("debug 2", tmp_orig_tokens[pos_in_token])
 
         new_sorted_wes = []
         for _list in summarized_indices:
             new_sorted_wes.append(numpy.mean(last_hidden_states[0][_list].detach().numpy(), axis=0))
 
-        return numpy.array(new_sorted_wes)
+        logger.debug(f"[context_embedding] new_sorted_wes: {new_sorted_wes}")
+        return numpy.array(new_sorted_wes)[position]
 
 
     @property

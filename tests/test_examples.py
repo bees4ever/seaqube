@@ -376,4 +376,171 @@ class TestExampleBasicAugmentation(unittest.TestCase):
 
 
 
+    def test_roberta_example(self):
+        from seaqube.nlp.roberta.seaberta import SeaBERTa
+        from seaqube.nlp.types import SeaQuBeWordEmbeddingsModel, SeaQuBeNLPModel2WV
 
+        import logging
+        logging.basicConfig(level=logging.DEBUG)
+
+        from seaqube.tools.io import load_json, save_json
+        from os.path import join
+
+        # Import some seaqube tools:
+        from seaqube.nlp.tools import word_count_list
+        from seaqube.nlp.types import RawModelTinCan
+        from seaqube.nlp.seaqube_model import SeaQuBeNLPLoader, SeaQuBeCompressLoader
+        from seaqube.nlp.tools import tokenize_corpus
+        yoda_cites = [
+            ["fear", "is", "the", "path", "to", "the", "dark", "side", ".", "fear", "leads", "to", "anger", ".",
+             "anger", "leads", "to", "hate", ".", "hate", "leads", "to", "suffering", "."],
+            ["once", "you", "start", "down", "the", "dark", "path", ",", "forever", "will", "it", "dominate", "your",
+             "destiny", ".", "consume", "you", ",", "it", "will", "."],
+            ["always", "pass", "on", "what", "you", "have", "learned", "."],
+            ["patience", "you", "must", "have", "my", "young", "padawan", "."],
+            ["in", "a", "dark", "place", "we", "find", "ourselves", ",", "and", "a", "little", "more", "knowledge",
+             "lights", "our", "way", "."],
+            ["death", "is", "a", "natural", "part", "of", "life", ".", "rejoice", "for", "those", "around", "you",
+             "who", "transform", "into", "the", "force", ".", "mourn", "them", "do", "not", ".", "miss", "them", "do",
+             "not", ".", "attachment", "leads", "to", "jealously", ".", "the", "shadow", "of", "greed", ",", "that",
+             "is", "."],
+            ["powerful", "you", "have", "become", ",", "the", "dark", "side", "i", "sense", "in", "you", "."],
+            ["train", "yourself", "to", "let", "go", "of", "everything", "you", "fear", "to", "lose", "."],
+            ["feel", "the", "force", "!"], ["truly", "wonderful", "the", "mind", "of", "a", "child", "is", "."],
+            ["do", "or", "do", "not", ".", "there", "is", "no", "try", "."],
+            ["great", "warrior", ".", "wars", "not", "make", "one", "great", "."],
+            ["size", "matters", "not", ".", "look", "at", "me", ".", "judge", "me", "by", "my", "size", ",", "do",
+             "you", "?", "hmm", "?", "hmm", ".", "and", "well", "you", "should", "not", ".", "for", "my", "ally", "is",
+             "the", "force", ",", "and", "a", "powerful", "ally", "it", "is", ".", "life", "creates", "it", ",",
+             "makes", "it", "grow", ".", "its", "energy", "surrounds", "us", "and", "binds", "us", ".", "luminous",
+             "beings", "are", "we", ",", "not", "this", "crude", "matter", ".", "you", "must", "feel", "the", "force",
+             "around", "you", ";", "here", ",", "between", "you", ",", "me", ",", "the", "tree", ",", "the", "rock",
+             ",", "everywhere", ",", "yes", ".", "even", "between", "the", "land", "and", "the", "ship", "."],
+            ["the", "dark", "side", "clouds", "everything", ".", "impossible", "to", "see", "the", "light", ",", "the",
+             "future", "is", "."], ["you", "will", "find", "only", "what", "you", "bring", "in", "."],
+            ["to", "be", "jedi", "is", "to", "face", "the", "truth", ",", "and", "choose", ".", "give", "off", "light",
+             ",", "or", "darkness", ",", "padawan", ".", "be", "a", "candle", ",", "or", "the", "night", "."],
+            ["control", ",", "control", ",", "you", "must", "learn", "control", "!"],
+            ["on", "many", "long", "journeys", "have", "i", "gone", ".", "and", "waited", ",", "too", ",", "for",
+             "others", "to", "return", "from", "journeys", "of", "their", "own", ".", "some", "return", ";", "some",
+             "are", "broken", ";", "some", "come", "back", "so", "different", "only", "their", "names", "remain", "."],
+            ["in", "the", "end", ",", "cowards", "are", "those", "who", "follow", "the", "dark", "side", "."],
+            ["difficult", "to", "see", ".", "always", "in", "motion", "is", "the", "future", "."],
+            ["ready", "are", "you", "?", "what", "know", "you", "of", "ready", "?", "for", "eight", "hundred", "years",
+             "have", "i", "trained", "jedi", ".", "my", "own", "counsel", "will", "i", "keep", "on", "who", "is", "to",
+             "be", "trained", ".", "a", "jedi", "must", "have", "the", "deepest", "commitment", ",", "the", "most",
+             "serious", "mind", ".", "this", "one", "a", "long", "time", "have", "i", "watched", ".", "all", "his",
+             "life", "has", "he", "looked", "away\u2026", "to", "the", "future", ",", "to", "the", "horizon", ".",
+             "never", "his", "mind", "on", "where", "he", "was", ".", "hmm", "?", "what", "he", "was", "doing", ".",
+             "hmph", ".", "adventure", ".", "heh", ".", "excitement", ".", "heh", ".", "a", "jedi", "craves", "not",
+             "these", "things", ".", "you", "are", "reckless", "."],
+            ["secret", ",", "shall", "i", "tell", "you", "?", "grand", "master", "of", "jedi", "order", "am", "i", ".",
+             "won", "this", "job", "in", "a", "raffle", "i", "did", ",", "think", "you", "?", "\u2018", "how", "did",
+             "you", "know", ",", "how", "did", "you", "know", ",", "master", "yoda", "?", "\u2019", "master", "yoda",
+             "knows", "these", "things", ".", "his", "job", "it", "is", "."],
+            ["to", "answer", "power", "with", "power", ",", "the", "jedi", "way", "this", "is", "not", ".", "in",
+             "this", "war", ",", "a", "danger", "there", "is", ",", "of", "losing", "who", "we", "are", "."],
+            ["many", "of", "the", "truths", "that", "we", "cling", "to", "depend", "on", "our", "point", "of", "view",
+             "."], ["named", "must", "your", "fear", "be", "before", "banish", "it", "you", "can", "."],
+            ["you", "think", "yoda", "stops", "teaching", ",", "just", "because", "his", "student", "does", "not",
+             "want", "to", "hear", "?", "a", "teacher", "yoda", "is", ".", "yoda", "teaches", "like", "drunkards",
+             "drink", ",", "like", "killers", "kill", "."],
+            ["do", "not", "assume", "anything", "obi-wan", ".", "clear", "your", "mind", "must", "be", "if", "you",
+             "are", "to", "discover", "the", "real", "villains", "behind", "this", "plot", "."],
+            ["you", "will", "know", "(", "the", "good", "from", "the", "bad", ")", "when", "you", "are", "calm", ",",
+             "at", "peace", ".", "passive", ".", "a", "jedi", "uses", "the", "force", "for", "knowledge", "and",
+             "defense", ",", "never", "for", "attack", "."],
+            ["soon", "will", "i", "rest", ",", "yes", ",", "forever", "sleep", ".", "earned", "it", "i", "have", ".",
+             "twilight", "is", "upon", "me", ",", "soon", "night", "must", "fall", "."],
+            ["when", "you", "look", "at", "the", "dark", "side", ",", "careful", "you", "must", "be", ".", "for", "the",
+             "dark", "side", "looks", "back", "."],
+            ["you", "will", "know", "(", "the", "good", "from", "the", "bad", ")", "when", "you", "are", "calm", ",",
+             "at", "peace", ".", "passive", ".", "a", "jedi", "uses", "the", "force", "for", "knowledge", "and",
+             "defense", ",", "never", "for", "attack", "."],
+            ["smaller", "in", "number", "are", "we", ",", "but", "larger", "in", "mind", "."],
+            ["your", "path", "you", "must", "decide", "."],
+            ["always", "two", "there", "are", ",", "no", "more", ",", "no", "less", ".", "a", "master", "and", "an",
+             "apprentice", "."],
+            ["no", "longer", "certain", ",", "that", "one", "ever", "does", "win", "a", "war", ",", "i", "am", ".",
+             "for", "in", "fighting", "the", "battles", ",", "the", "bloodshed", ",", "already", "lost", "we", "have",
+             ".", "yet", ",", "open", "to", "us", "a", "path", "remains", ".", "that", "unknown", "to", "the", "sith",
+             "is", ".", "through", "this", "path", ",", "victory", "we", "may", "yet", "find", ".", "not", "victory",
+             "in", "the", "clone", "wars", ",", "but", "victory", "for", "all", "time", "."],
+            ["if", "no", "mistake", "you", "have", "made", ",", "losing", "you", "are", ".", "a", "different", "game",
+             "you", "should", "play", "."],
+            ["[", "luke", "skywalker", ":", "]", "i", "can", "\u2019", "t", "believe", "it", ".", "[", "yoda", ":", "]",
+             "that", "is", "why", "you", "fail", "."], ["happens", "to", "every", "guy", "sometimes", "this", "does"],
+            ["adventure", ".", "excitement", ".", "a", "jedi", "craves", "not", "these", "things", "."],
+            ["only", "the", "dark", "lord", "of", "the", "sith", "knows", "of", "our", "weakness", ".", "if",
+             "informed", "the", "senate", "is", ",", "multiply", "our", "adversaries", "will", "."]]
+
+        main_path = join(dirname(__file__), "..", "examples", "seaberta", "training")
+
+        train_params = {
+            "per_gpu_eval_batch_size": 4,
+            "do_eval": True,
+            "evaluate_during_training": False,
+            "line_by_line": False,
+            "should_continue": False,
+            "model_name_or_path": False,
+            "mlm": True,
+            "do_train": True,
+            "overwrite_output_dir": True,
+            "overwrite_cache": False,
+            "block_size": 512,
+            "eval_all_checkpoints": 2,
+            "server_ip": "",
+            "mlm_probability": 0.15,
+            "local_rank": -1,  # NO GPU,
+            "no_cuda": False,
+            "fp16": False,
+            "fp16_opt_level": 'O1',
+            "max_steps": 10,
+            "warmup_steps": 10,
+            "learning_rate": 5e-5,
+            "per_gpu_train_batch_size": 4,
+            "gradient_accumulation_steps": 4,
+            "weight_decay": 0.01,
+            "adam_epsilon": 1e-6,
+            "max_grad_norm": 100.0,
+            "save_total_limit": 10,
+            "save_steps": 10,
+            "logging_steps": 2,
+            "seed": 0,
+        }
+
+        roberta = SeaBERTa(main_path, train_params)
+        roberta.train(yoda_cites)
+        roberta.load_trained_model()
+
+        class SeaQuBeWordEmbeddingsModelSeaBERTa(SeaQuBeWordEmbeddingsModel):
+            def __init__(self, seaberta: SeaBERTa):
+                self.seaberta = seaberta
+
+            def vocabs(self):
+                return self.seaberta.wv.vocabs
+
+            @property
+            def wv(self):
+                return self.seaberta.wv
+
+            def word_vector(self, word):
+                return self.seaberta.wv[word]
+
+            def matrix(self):
+                return self.seaberta.wv.matrix
+
+            def context_embedding(self, words, position):
+                return self.seaberta.context_embedding(words, position)
+
+        seaberta = SeaQuBeWordEmbeddingsModelSeaBERTa(roberta)
+        roberta.context_embedding(["t"], 0), roberta.context_embedding(["t"], 0).shape
+
+        self.assertEqual(type(roberta.wv.vocabs), list)
+        tin_can = RawModelTinCan(seaberta, word_count_list(yoda_cites))
+        nlp = SeaQuBeNLPLoader.load_model_from_tin_can(tin_can, "seaberta")
+        doc = nlp("Luke is a Jedi and yoda is a master Jedi!")
+        self.assertEqual(('jedi', 'jedi') == (doc[3].text, doc[9].text))  # both are the same word
+        from seaqube.tools.math import cosine
+
+        self.assertAlmostEqual(cosine(doc[3].vector, doc[9].vector), 0.9, delta=0.12)
