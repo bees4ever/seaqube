@@ -29,6 +29,9 @@ requirements = ['dill',
                 'scipy',
                 'sklearn',
                 'spacy==2.3.2',
+                'chainer',
+                'tokenizers',
+                'transformers==3.5.1'
                 'tqdm']
 
 print("WELCOME TO SETUP SEAQUBE")
@@ -39,7 +42,7 @@ setuptools.setup(
     # Distribution name the package. Name must be unique so adding your username at the end is common.
     name="seaqube",
     # Version number of your package. Semantic versioning is commonly used.
-    version="0.1.2",
+    version="0.1.4",
     # Author name.
     author="Benjamin Manns",
     # Author's email address.

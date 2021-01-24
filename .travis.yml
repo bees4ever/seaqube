@@ -22,11 +22,11 @@ install:
   - pip install pytest
   - pip install progressbar2
   - pip install wheel
-  - pip install chainer
   - pip install twine
   - python -c "import nltk; nltk.download('punkt'); nltk.download('wordnet')"
   - python -c "from seaqube import download;download('vec4ir')"
   - python -c "import vec4ir;  a=vec4ir.utils.Counter(['a','word']); print(a)" # does it work now?
+  - pip install torch==1.7.1+cpu torchvision==0.8.2+cpu torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html
 
 # deploy:
 # python setup.py sdist bdist_wheel
