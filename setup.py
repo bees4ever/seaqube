@@ -31,7 +31,7 @@ requirements = ['dill',
                 'spacy==2.3.2',
                 'chainer',
                 'tokenizers',
-                'transformers==3.5.1'
+                'transformers==3.5.1',
                 'tqdm']
 
 print("WELCOME TO SETUP SEAQUBE")
