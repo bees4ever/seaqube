@@ -30,7 +30,7 @@ requirements = ['dill',
                 'sklearn',
                 'spacy==2.3.2',
                 'chainer',
-                'tokenizers',
+                'tokenizers==0.9.3',
                 'transformers==3.5.1',
                 'tqdm']
 
