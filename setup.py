@@ -32,6 +32,7 @@ requirements = ['dill',
                 'chainer',
                 'tokenizers==0.9.3',
                 'transformers==3.5.1',
+                'tensorboardX',
                 'tqdm']
 
 print("WELCOME TO SETUP SEAQUBE")
