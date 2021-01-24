@@ -540,7 +540,7 @@ class TestExampleBasicAugmentation(unittest.TestCase):
         tin_can = RawModelTinCan(seaberta, word_count_list(yoda_cites))
         nlp = SeaQuBeNLPLoader.load_model_from_tin_can(tin_can, "seaberta")
         doc = nlp("Luke is a Jedi and yoda is a master Jedi!")
-        self.assertEqual(('jedi', 'jedi') == (doc[3].text, doc[9].text))  # both are the same word
+        self.assertEqual(('jedi', 'jedi'), (doc[3].text, doc[9].text))  # both are the same word
         from seaqube.tools.math import cosine
 
         self.assertAlmostEqual(cosine(doc[3].vector, doc[9].vector), 0.9, delta=0.12)
