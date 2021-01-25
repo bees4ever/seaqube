@@ -53,7 +53,7 @@ class SeaBERTa:
         path = join(self.main_path, filename)
         if not os.path.exists(path):
             corpus = list(map(lambda x: " " + " ".join(x), corpus))
-            with open(path, "w") as f:
+            with open(path, "w", encoding="utf-8") as f:
                 f.writelines("\n".join(corpus))
 
     @property
@@ -97,7 +97,7 @@ class SeaBERTa:
             "vocab_size": vocab_size
         }
 
-        with open(f"{self.main_path}/config.json", 'w') as fp:
+        with open(f"{self.main_path}/config.json", 'w', encoding="utf-8") as fp:
             json.dump(config, fp)
 
         print(raw_vocab_path, vocab_size)
@@ -116,7 +116,7 @@ class SeaBERTa:
 
         tokenizer_config = {"max_len": 512}
 
-        with open(f"{self.main_path}/tokenizer_config.json", 'w') as fp:
+        with open(f"{self.main_path}/tokenizer_config.json", 'w', encoding="utf-8") as fp:
             json.dump(tokenizer_config, fp)
 
         # model paths
@@ -140,7 +140,7 @@ class SeaBERTa:
         self.tokenizer = AutoTokenizer.from_pretrained(main_output_dir)
         weights = self.model.roberta.embeddings.word_embeddings.state_dict()["weight"]
         # vocab file
-        with open(f"{self.main_path}/vocab.json", "r") as f:
+        with open(f"{self.main_path}/vocab.json", "r", encoding="utf-8") as f:
             self.vocabs: dict = json.load(f)
 
         matrix_raw = []
