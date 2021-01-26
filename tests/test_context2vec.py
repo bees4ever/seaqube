@@ -19,6 +19,7 @@ corpus = [['till', 'this', 'moment', 'i', 'never', 'knew', 'myself', '.'],
                ['one', 'half', 'of', 'the', 'world', 'can', 'not', 'understand', 'the', 'pleasures', 'of', 'the',
                 'other', '.']]
 
+
 class TestContext2Vec(unittest.TestCase):
     def test_training(self):
         c2v = Context2Vec(epoch=1)

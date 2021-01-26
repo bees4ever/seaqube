@@ -76,7 +76,7 @@ class Context2Vec:
             self.reader.open()
             for sent in self.reader.next_batch():
 
-                self.backend_model.zerograds()
+                self.backend_model.cleargrads()
                 loss = self.backend_model(sent)
                 accum_loss += loss.data
                 loss.backward()

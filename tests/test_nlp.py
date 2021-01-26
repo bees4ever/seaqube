@@ -7,6 +7,7 @@ from seaqube.nlp.seaqube_model import SeaQuBeCompressLoader
 def model_path():
     return join(dirname(__file__), 'test_data', 'small_copressed_model.dill')
 
+
 class TestNLP(unittest.TestCase):
     def test_api(self):
         nlp = SeaQuBeCompressLoader.load_compressed_model(model_path(), 'test_model')

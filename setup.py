@@ -23,7 +23,6 @@ requirements = ['dill',
                 'pathos==0.2.6',
                 'progressbar2',
                 'pyinflect==0.5.1',
-                #'pytest==6.0.2',
                 'schedule',
                 'scikit-learn',
                 'scipy',
@@ -43,7 +42,7 @@ setuptools.setup(
     # Distribution name the package. Name must be unique so adding your username at the end is common.
     name="seaqube",
     # Version number of your package. Semantic versioning is commonly used.
-    version="0.1.7",
+    version="0.1.9",
     # Author name.
     author="Benjamin Manns",
     # Author's email address.
