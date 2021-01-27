@@ -26,6 +26,7 @@ class C2VWV:
     def __init__(self, word2index: dict, vocabs: list, matrix):
         self.matrix = matrix
         self.word2index = word2index
+        self.index2word = {v: k for k, v in word2index.items()}
         self.vectors = matrix
         self.vocabs = vocabs
 
