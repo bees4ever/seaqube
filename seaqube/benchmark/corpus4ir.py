@@ -25,7 +25,7 @@ from vec4ir import WordCentroidDistance, Matching, Retrieval
 from numpy import array, mean
 
 
-class Corpus4IRBenchmark(BaseWordEmbeddingBenchmark):
+class WordCentroidSimilarityBenchmark(BaseWordEmbeddingBenchmark):
     """
     An evaluation method which is based on the Word Centroid Method (vec4ir-package) to simulate an IR system and to
     evaluate the performance the word embeddings based on how the IR scores (F_1 score). The word embeddings are used to

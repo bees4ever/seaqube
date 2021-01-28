@@ -124,7 +124,7 @@ class TestExampleBasicAugmentation(unittest.TestCase):
 
         del model
 
-        from seaqube.benchmark.corpus4ir import Corpus4IRBenchmark
+        from seaqube.benchmark.corpus4ir import WordCentroidSimilarityBenchmark
         from seaqube.benchmark.wordanalogy import WordAnalogyBenchmark
         from seaqube.benchmark.wordsimilarity import WordSimilarityBenchmark
         from seaqube.benchmark.wordoutliers import WordOutliersBenchmark
@@ -138,7 +138,7 @@ class TestExampleBasicAugmentation(unittest.TestCase):
         wob = WordOutliersBenchmark('wikisem500')
         print(wob(nlp.model))  # score=0.0
 
-        c4ir = Corpus4IRBenchmark(corpus[0:200])  # need the original corpus for setting up IR
+        c4ir = WordCentroidSimilarityBenchmark(corpus[0:200])  # need the original corpus for setting up IR
         print(c4ir(nlp.model))
 
     def test_example_aug(self):
@@ -343,13 +343,13 @@ class TestExampleBasicAugmentation(unittest.TestCase):
         from seaqube.benchmark.semantic_wordnet import SemanticWordnetBenchmark
 
         # We need to install `vec4ir`, this can be done trough "SeaQuBe":
-        # from seaqube.benchmark.corpus4ir import Corpus4IRBenchmark
+        # from seaqube.benchmark.corpus4ir import WordCentroidSimilarityBenchmark
         from seaqube import download;
         download('vec4ir')
 
         import vec4ir
         # load module
-        from seaqube.benchmark.corpus4ir import Corpus4IRBenchmark
+        from seaqube.benchmark.corpus4ir import WordCentroidSimilarityBenchmark
 
         # perform semantical tests
         wsb = WordSimilarityBenchmark(test_set='simlex999')
@@ -361,7 +361,7 @@ class TestExampleBasicAugmentation(unittest.TestCase):
         wob = WordOutliersBenchmark('wikisem500')
         print(wob(nlp.model))  # score=0.0
 
-        c4ir = Corpus4IRBenchmark(corpus[0:200])  # need the original corpus for setting up IR
+        c4ir = WordCentroidSimilarityBenchmark(corpus[0:200])  # need the original corpus for setting up IR
         print(c4ir(nlp.model))
 
         # The semantic word net benchmark needs a base of word pairs. This pairs can be generated easily:

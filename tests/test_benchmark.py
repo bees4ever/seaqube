@@ -8,7 +8,7 @@ import time
 from os.path import join, basename, dirname
 import unittest
 
-from seaqube.benchmark.corpus4ir import Corpus4IRBenchmark
+from seaqube.benchmark.corpus4ir import WordCentroidSimilarityBenchmark
 from seaqube.benchmark.semantic_wordnet import SemanticWordnetBenchmark
 from seaqube.benchmark.wordanalogy import WordAnalogyBenchmark
 from seaqube.benchmark.wordoutliers import WordOutliersBenchmark
@@ -198,14 +198,14 @@ class TestSemanticWordnet(unittest.TestCase):
         self.assertAlmostEquals(results["score"], 0.182, delta=0.2)  # this is not predictable, ...
 
 
-class TestCorpus4IRBenchmark(unittest.TestCase):
+class TestWordCentroidSimilarityBenchmark(unittest.TestCase):
     def test_simple_benchmark(self):
         # need to load a simple model, i.e. small dataset
         #model = SmallModel()
         #model.process(load_corpus())
         #nlp = SeaQuBeNLPLoader.load_model_from_tin_can(model.get(), 'small_model')
         nlp = SeaQuBeCompressLoader.load_compressed_model(model_path(), 'test_model')
-        bench_corpus = Corpus4IRBenchmark(load_corpus())
+        bench_corpus = WordCentroidSimilarityBenchmark(load_corpus())
         res = bench_corpus(nlp.model)
 
         self.assertAlmostEqual(res.score, 0.295066, delta=0.01)
